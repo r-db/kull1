@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clubs &amp; Community — KULL 1</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    a { color: inherit; text-decoration: none; }
+    body { background: #111; font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif; }
+
+    /* ── NAV ── */
+    nav { background: #1A1E24; padding: 0 48px; height: 80px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.06); position: sticky; top: 0; z-index: 200; }
+    .nav-brand { display: flex; align-items: center; gap: 14px; }
+    .nav-logo-fish { height: 62px; width: auto; filter: invert(1) brightness(1); display: block; }
+    .nav-wordmark { font-size: 17px; font-weight: 800; letter-spacing: 0.18em; color: #FFFFFF; text-transform: uppercase; }
+    .nav-links { display: flex; align-items: center; gap: 40px; list-style: none; }
+    .nav-links a { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.55); transition: color 0.15s; }
+    .nav-links a:hover, .nav-links a.active { color: #fff; }
+    .nav-cta { font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: #FFFFFF; border: 1.5px solid rgba(255,255,255,0.5); padding: 10px 22px; border-radius: 4px; transition: border-color 0.15s, background 0.15s; }
+    .nav-cta:hover { border-color: #fff; background: rgba(255,255,255,0.07); }
+    .nav-hamburger { display: none; flex-direction: column; justify-content: center; gap: 5px; background: none; border: none; cursor: pointer; padding: 8px; }
+    .nav-hamburger span { display: block; width: 24px; height: 2px; background: #fff; border-radius: 2px; transition: transform 0.22s, opacity 0.22s; }
+    .nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .nav-hamburger.open span:nth-child(2) { opacity: 0; }
+    .nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+    .mobile-menu { display: none; position: fixed; top: 80px; left: 0; right: 0; background: #1A1E24; border-top: 1px solid rgba(255,255,255,0.08); padding: 8px 0 24px; z-index: 199; flex-direction: column; }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a { font-size: 13px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.65); padding: 18px 28px; border-bottom: 1px solid rgba(255,255,255,0.05); transition: color 0.15s, background 0.15s; }
+    .mobile-menu a:hover { color: #fff; background: rgba(255,255,255,0.04); }
+    .mobile-menu .mobile-cta { margin: 20px 28px 0; border: 1.5px solid rgba(255,255,255,0.45); border-radius: 4px; text-align: center; padding: 14px 28px; border-bottom: 1.5px solid rgba(255,255,255,0.45); color: #fff; }
+    .mobile-menu .mobile-cta:hover { border-color: #fff; background: rgba(255,255,255,0.07); }
+    @media (max-width: 768px) { nav { padding: 0 24px; } .nav-links { display: none; } .nav-cta { display: none; } .nav-hamburger { display: flex; } }
+
+    /* ── HERO ── */
+    .page-hero {
+      background: #111;
+      padding: 120px 72px 100px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .page-hero-inner { max-width: 1280px; margin: 0 auto; }
+    .page-hero-label { font-size: 10px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-bottom: 20px; }
+    .page-hero-headline { font-size: clamp(48px, 6vw, 96px); font-weight: 900; letter-spacing: -0.03em; text-transform: uppercase; color: #FFFFFF; line-height: 0.92; margin-bottom: 24px; max-width: 900px; }
+    .page-hero-subhead { font-size: 18px; line-height: 1.65; color: rgba(255,255,255,0.5); max-width: 560px; }
+    @media (max-width: 768px) { .page-hero { padding: 72px 24px 64px; } }
+
+    /* ── WHAT IS A CLUB ── */
+    .what-section {
+      background: #0E1114;
+      padding: 100px 72px;
+    }
+    .what-inner { max-width: 1280px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 100px; align-items: center; }
+    .section-label { font-size: 10px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-bottom: 16px; }
+    .section-headline { font-size: clamp(30px, 3.5vw, 52px); font-weight: 900; letter-spacing: -0.03em; text-transform: uppercase; color: #FFFFFF; line-height: 0.95; margin-bottom: 20px; }
+    .section-body { font-size: 16px; line-height: 1.7; color: rgba(255,255,255,0.45); margin-bottom: 32px; }
+    .what-list { display: flex; flex-direction: column; gap: 0; }
+    .what-item { padding: 20px 0; border-bottom: 1px solid rgba(255,255,255,0.06); display: grid; grid-template-columns: 24px 1fr; gap: 14px; align-items: start; }
+    .what-item:first-child { border-top: 1px solid rgba(255,255,255,0.06); }
+    .what-check { font-size: 11px; color: rgba(255,255,255,0.3); padding-top: 2px; }
+    .what-item-text { font-size: 14px; color: rgba(255,255,255,0.65); line-height: 1.55; }
+    .what-item-text strong { color: rgba(255,255,255,0.9); font-weight: 700; }
+    .club-card {
+      background: rgba(255,255,255,0.93);
+      border-radius: 10px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.8);
+      overflow: hidden;
+    }
+    .club-card-header { background: #111; padding: 20px 24px; display: flex; align-items: center; gap: 14px; }
+    .club-card-fish { height: 28px; filter: invert(1) brightness(1); }
+    .club-card-name { font-size: 13px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: #FFFFFF; }
+    .club-card-body { padding: 24px; }
+    .club-stat-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+    .club-stat { background: #F4F2EE; border-radius: 6px; padding: 14px; text-align: center; }
+    .club-stat-val { font-size: 20px; font-weight: 900; color: #111; letter-spacing: -0.02em; }
+    .club-stat-label { font-size: 9px; color: rgba(0,0,0,0.4); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 2px; }
+    .club-event-row { padding: 12px 0; border-bottom: 1px solid rgba(0,0,0,0.07); display: flex; align-items: center; justify-content: space-between; }
+    .club-event-row:last-child { border-bottom: none; }
+    .club-event-name { font-size: 13px; font-weight: 700; color: #111; }
+    .club-event-date { font-size: 11px; color: rgba(0,0,0,0.4); }
+    .club-event-status { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+    .club-event-status.open { color: #16a34a; }
+    .club-event-status.upcoming { color: rgba(0,0,0,0.35); }
+    @media (max-width: 900px) { .what-section { padding: 72px 24px; } .what-inner { grid-template-columns: 1fr; gap: 48px; } }
+
+    /* ── CLUB DIRECTORY PREVIEW ── */
+    .clubs-section {
+      background:
+        linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.75)),
+        url('lake-bg.jpg') center / cover no-repeat;
+      padding: 100px 72px;
+    }
+    .clubs-inner { max-width: 1280px; margin: 0 auto; }
+    .clubs-header { margin-bottom: 48px; }
+    .clubs-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .club-tile {
+      background: rgba(255,255,255,0.93);
+      padding: 28px 32px;
+      transition: background 0.15s;
+    }
+    .club-tile:hover { background: rgba(255,255,255,0.97); }
+    .club-tile-name { font-size: 16px; font-weight: 900; letter-spacing: -0.01em; color: #111; margin-bottom: 6px; }
+    .club-tile-region { font-size: 11px; color: rgba(0,0,0,0.4); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 16px; }
+    .club-tile-meta { display: flex; gap: 20px; }
+    .club-tile-stat { }
+    .club-tile-stat-val { font-size: 18px; font-weight: 900; color: #111; }
+    .club-tile-stat-label { font-size: 9px; color: rgba(0,0,0,0.35); text-transform: uppercase; letter-spacing: 0.1em; }
+    .clubs-cta-wrap { margin-top: 40px; text-align: center; }
+    .clubs-cta { display: inline-block; font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: #111; background: #FFFFFF; padding: 14px 32px; border-radius: 4px; transition: opacity 0.15s; }
+    .clubs-cta:hover { opacity: 0.88; }
+    @media (max-width: 900px) { .clubs-section { padding: 72px 24px; } .clubs-grid { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 600px) { .clubs-grid { grid-template-columns: 1fr; } }
+
+    /* ── COMMUNITY VALUES ── */
+    .values-section {
+      background: #13161A;
+      padding: 100px 72px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    .values-inner { max-width: 1280px; margin: 0 auto; }
+    .values-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.06); margin-top: 48px; }
+    .value-card { background: #13161A; padding: 48px 40px; }
+    .value-num { font-size: 11px; font-weight: 800; letter-spacing: 0.1em; color: rgba(255,255,255,0.15); margin-bottom: 20px; }
+    .value-title { font-size: 22px; font-weight: 900; letter-spacing: -0.02em; text-transform: uppercase; color: #FFFFFF; margin-bottom: 14px; }
+    .value-body { font-size: 14px; line-height: 1.7; color: rgba(255,255,255,0.45); }
+    @media (max-width: 768px) { .values-section { padding: 72px 24px; } .values-grid { grid-template-columns: 1fr; } }
+
+    /* ── CTA ── */
+    .community-cta-section {
+      background: #111;
+      padding: 100px 72px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      text-align: center;
+    }
+    .community-cta-inner { max-width: 640px; margin: 0 auto; }
+    .cta-label { font-size: 10px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-bottom: 16px; }
+    .cta-headline { font-size: clamp(32px, 4vw, 60px); font-weight: 900; letter-spacing: -0.03em; text-transform: uppercase; color: #FFFFFF; line-height: 0.95; margin-bottom: 20px; }
+    .cta-sub { font-size: 16px; line-height: 1.65; color: rgba(255,255,255,0.45); margin-bottom: 44px; }
+    .cta-buttons { display: flex; align-items: center; justify-content: center; gap: 24px; flex-wrap: wrap; }
+    .cta-btn-primary { display: inline-block; font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: #111; background: #FFFFFF; padding: 16px 36px; border-radius: 4px; transition: opacity 0.15s; }
+    .cta-btn-primary:hover { opacity: 0.88; }
+    .cta-btn-secondary { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.5); transition: color 0.15s; }
+    .cta-btn-secondary:hover { color: #fff; }
+    @media (max-width: 768px) { .community-cta-section { padding: 72px 24px; } }
+
+    /* ── FOOTER ── */
+    footer { background: #0C0E10; border-top: 1px solid rgba(255,255,255,0.06); padding: 80px 72px 40px; }
+    @media (max-width: 900px) { footer { padding: 60px 24px 32px; } }
+    .footer-top { max-width: 1280px; margin: 0 auto; display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 60px; padding-bottom: 64px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+    @media (max-width: 900px) { .footer-top { grid-template-columns: 1fr 1fr; gap: 40px; } }
+    .footer-logo { height: 52px; width: auto; filter: invert(1) brightness(1); display: block; margin-bottom: 18px; }
+    .footer-tagline { font-size: 13px; color: rgba(255,255,255,0.35); line-height: 1.6; max-width: 220px; }
+    .footer-app-badges { display: flex; flex-direction: column; gap: 10px; margin-top: 28px; }
+    .footer-badge { display: inline-flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 9px 14px; width: fit-content; color: #FFFFFF; }
+    .footer-badge-icon { font-size: 18px; line-height: 1; }
+    .footer-badge-sub { font-size: 9px; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 0.08em; display: block; }
+    .footer-badge-name { font-size: 13px; font-weight: 700; color: #FFFFFF; display: block; }
+    .footer-col-label { font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.25); margin-bottom: 20px; }
+    .footer-col-links { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+    .footer-col-links a { font-size: 14px; color: rgba(255,255,255,0.55); transition: color 0.15s; }
+    .footer-col-links a:hover { color: #FFFFFF; }
+    .footer-bottom { max-width: 1280px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding-top: 28px; gap: 24px; flex-wrap: wrap; }
+    .footer-copy { font-size: 12px; color: rgba(255,255,255,0.2); }
+    .footer-legal { display: flex; gap: 24px; }
+    .footer-legal a { font-size: 12px; color: rgba(255,255,255,0.2); transition: color 0.15s; }
+    .footer-legal a:hover { color: rgba(255,255,255,0.5); }
+  </style>
+</head>
+
+<body>
+
+<nav>
+  <a href="index.html" class="nav-brand">
+    <img src="logo-fish.svg" alt="KULL 1" class="nav-logo-fish" />
+    <span class="nav-wordmark">KULL 1</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="anglers.html">Anglers</a></li>
+    <li><a href="directors.html">Tournament Directors</a></li>
+    <li><a href="community.html" class="active">Clubs</a></li>
+    <li><a href="news.html">News Room</a></li>
+  </ul>
+  <a href="signup.html" class="nav-cta">Unlock the Gate</a>
+  <button class="nav-hamburger" id="navHamburger" aria-label="Open navigation" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+  <a href="anglers.html">Anglers</a>
+  <a href="directors.html">Tournament Directors</a>
+  <a href="community.html">Clubs</a>
+  <a href="news.html">News Room</a>
+  <a href="signup.html" class="mobile-cta">Unlock the Gate</a>
+</div>
+
+<!-- ── HERO ── -->
+<header class="page-hero">
+  <div class="page-hero-inner">
+    <p class="page-hero-label">Clubs &amp; Community</p>
+    <h1 class="page-hero-headline">Fish the Same<br>Waters.<br>Know the Same<br>People.</h1>
+    <p class="page-hero-subhead">Tournament fishing is a community before it's a competition. Clubs on KULL 1 are where your circuit lives — schedules, standings, history, and the anglers you share the water with.</p>
+  </div>
+</header>
+
+<!-- ── WHAT IS A CLUB ── -->
+<section class="what-section">
+  <div class="what-inner">
+    <div>
+      <p class="section-label">What's a Club</p>
+      <h2 class="section-headline">Your Circuit Home Base.</h2>
+      <p class="section-body">A KULL 1 Club is where your tournament circuit lives. Created by a Tournament Director, it holds everything your angler base needs — event schedules, live leaderboards, season standings, and a growing record of every verified catch your circuit has produced.</p>
+      <div class="what-list">
+        <div class="what-item">
+          <span class="what-check">—</span>
+          <p class="what-item-text"><strong>Tournament Schedule</strong> — all upcoming events, entry fees, and registration links in one place</p>
+        </div>
+        <div class="what-item">
+          <span class="what-check">—</span>
+          <p class="what-item-text"><strong>Season Standings</strong> — cumulative points across every event your club runs</p>
+        </div>
+        <div class="what-item">
+          <span class="what-check">—</span>
+          <p class="what-item-text"><strong>Verified Results</strong> — every past tournament result, GPS-locked and permanent</p>
+        </div>
+        <div class="what-item">
+          <span class="what-check">—</span>
+          <p class="what-item-text"><strong>Angler Profiles</strong> — every angler who has competed in your circuit, with their verified record</p>
+        </div>
+        <div class="what-item">
+          <span class="what-check">—</span>
+          <p class="what-item-text"><strong>Shareable Link</strong> — one URL to your entire club page, ready to share to your existing Facebook group, email list, or anywhere else</p>
+        </div>
+      </div>
+    </div>
+    <div class="club-card">
+      <div class="club-card-header">
+        <img src="logo-fish.svg" alt="" class="club-card-fish" />
+        <span class="club-card-name">Seminole Bass Circuit</span>
+      </div>
+      <div class="club-card-body">
+        <div class="club-stat-row">
+          <div class="club-stat">
+            <p class="club-stat-val">214</p>
+            <p class="club-stat-label">Members</p>
+          </div>
+          <div class="club-stat">
+            <p class="club-stat-val">8</p>
+            <p class="club-stat-label">Events</p>
+          </div>
+          <div class="club-stat">
+            <p class="club-stat-val">1.8K</p>
+            <p class="club-stat-label">Catches</p>
+          </div>
+        </div>
+        <div class="club-event-row">
+          <div>
+            <p class="club-event-name">Lake Seminole Spring Open</p>
+            <p class="club-event-date">May 18, 2026</p>
+          </div>
+          <span class="club-event-status open">Open</span>
+        </div>
+        <div class="club-event-row">
+          <div>
+            <p class="club-event-name">Flint River Summer Classic</p>
+            <p class="club-event-date">Jun 7, 2026</p>
+          </div>
+          <span class="club-event-status upcoming">Upcoming</span>
+        </div>
+        <div class="club-event-row">
+          <div>
+            <p class="club-event-name">Lake Lanier Open</p>
+            <p class="club-event-date">Jun 28, 2026</p>
+          </div>
+          <span class="club-event-status upcoming">Upcoming</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CLUB DIRECTORY ── -->
+<section class="clubs-section">
+  <div class="clubs-inner">
+    <div class="clubs-header">
+      <p class="section-label" style="color:rgba(255,255,255,0.4);">Active Circuits</p>
+      <h2 class="section-headline">Clubs on KULL 1</h2>
+    </div>
+    <div class="clubs-grid">
+      <div class="club-tile">
+        <p class="club-tile-name">Seminole Bass Circuit</p>
+        <p class="club-tile-region">Southwest Georgia</p>
+        <div class="club-tile-meta">
+          <div class="club-tile-stat"><p class="club-tile-stat-val">214</p><p class="club-tile-stat-label">Anglers</p></div>
+          <div class="club-tile-stat"><p class="club-tile-stat-val">8</p><p class="club-tile-stat-label">Events</p></div>
+        </div>
+      </div>
+      <div class="club-tile">
+        <p class="club-tile-name">Flint River Kayak Club</p>
+        <p class="club-tile-region">Central Georgia</p>
+        <div class="club-tile-meta">
+          <div class="club-tile-stat"><p class="club-tile-stat-val">87</p><p class="club-tile-stat-label">Anglers</p></div>
+          <div class="club-tile-stat"><p class="club-tile-stat-val">5</p><p class="club-tile-stat-label">Events</p></div>
+        </div>
+      </div>
+      <div class="club-tile">
+        <p class="club-tile-name">Lake Lanier Open Series</p>
+        <p class="club-tile-region">North Georgia</p>
+        <div class="club-tile-meta">
+          <div class="club-tile-stat"><p class="club-tile-stat-val">143</p><p class="club-tile-stat-label">Anglers</p></div>
+          <div class="club-tile-stat"><p class="club-tile-stat-val">6</p><p class="club-tile-stat-label">Events</p></div>
+        </div>
+      </div>
+      <div class="club-tile">
+        <p class="club-tile-name">Panhandle Kayak Anglers</p>
+        <p class="club-tile-region">Northwest Florida</p>
+        <div class="club-tile-meta">
+          <div class="club-tile-stat"><p class="club-tile-stat-val">64</p><p class="club-tile-stat-label">Anglers</p></div>
+          <div class="club-tile-stat"><p class="club-tile-stat-val">4</p><p class="club-tile-stat-label">Events</p></div>
+        </div>
+      </div>
+      <div class="club-tile">
+        <p class="club-tile-name">East Tennessee Bass Trail</p>
+        <p class="club-tile-region">East Tennessee</p>
+        <div class="club-tile-meta">
+          <div class="club-tile-stat"><p class="club-tile-stat-val">91</p><p class="club-tile-stat-label">Anglers</p></div>
+          <div class="club-tile-stat"><p class="club-tile-stat-val">5</p><p class="club-tile-stat-label">Events</p></div>
+        </div>
+      </div>
+      <div class="club-tile">
+        <p class="club-tile-name">Carolinas Kayak Bass Series</p>
+        <p class="club-tile-region">North &amp; South Carolina</p>
+        <div class="club-tile-meta">
+          <div class="club-tile-stat"><p class="club-tile-stat-val">178</p><p class="club-tile-stat-label">Anglers</p></div>
+          <div class="club-tile-stat"><p class="club-tile-stat-val">7</p><p class="club-tile-stat-label">Events</p></div>
+        </div>
+      </div>
+    </div>
+    <div class="clubs-cta-wrap">
+      <a href="signup.html" class="clubs-cta">Find Your Circuit</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── COMMUNITY VALUES ── -->
+<section class="values-section">
+  <div class="values-inner">
+    <p class="section-label">What We're Building</p>
+    <h2 class="section-headline">Real Anglers.<br>Verified Catches.<br>Shared Waters.</h2>
+    <div class="values-grid">
+      <div class="value-card">
+        <p class="value-num">01</p>
+        <h3 class="value-title">Shared Waters</h3>
+        <p class="value-body">KULL 1 clubs form around specific bodies of water and regional circuits. The anglers in your club know the same coves, the same seasonal patterns, the same ramps. That shared knowledge is the foundation of a real fishing community.</p>
+      </div>
+      <div class="value-card">
+        <p class="value-num">02</p>
+        <h3 class="value-title">Verified Competition</h3>
+        <p class="value-body">When results are verified, the standings mean something. The number one angler in your circuit earned that position on the water — GPS-locked catch by catch. No disputes. No doubt about who's actually the best on your home lake.</p>
+      </div>
+      <div class="value-card">
+        <p class="value-num">03</p>
+        <h3 class="value-title">Career Records</h3>
+        <p class="value-body">Your KULL 1 record follows you. The catch you made at age 22 on Lake Lanier is still there when you're 45 fishing a different circuit in a different state. A permanent verified fishing record has never existed before KULL 1.</p>
+      </div>
+      <div class="value-card">
+        <p class="value-num">04</p>
+        <h3 class="value-title">Community Growth</h3>
+        <p class="value-body">The more anglers who join your circuit's club, the deeper the standings become. Clubs grow when the infrastructure is trustworthy. KULL 1's verification creates the conditions for circuits to grow past the Facebook group and into a real league.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA ── -->
+<section class="community-cta-section">
+  <div class="community-cta-inner">
+    <p class="cta-label">Join the Circuit</p>
+    <h2 class="cta-headline">Your Club<br>Is Already<br>Out There.</h2>
+    <p class="cta-sub">Find your circuit in the app, or create your own. Either way, your verified career on the water starts today.</p>
+    <div class="cta-buttons">
+      <a href="signup.html" class="cta-btn-primary">Get the App</a>
+      <a href="directors.html" class="cta-btn-secondary">Start a club →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-top">
+    <div>
+      <img src="logo-fish.svg" alt="KULL 1" class="footer-logo" />
+      <p class="footer-tagline">Tournament fishing, verified. GPS-locked catches, live leaderboards, and a permanent record of your career on water.</p>
+      <div class="footer-app-badges">
+        <a href="#" class="footer-badge">
+          <span class="footer-badge-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg></span>
+          <span class="footer-badge-text"><span class="footer-badge-sub">Download on the</span><span class="footer-badge-name">App Store</span></span>
+        </a>
+        <a href="#" class="footer-badge">
+          <span class="footer-badge-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg"><path d="M3 20.5v-17c0-.83.94-1.3 1.6-.8l13 8.5c.57.37.57 1.23 0 1.6l-13 8.5c-.66.5-1.6.03-1.6-.8z"/></svg></span>
+          <span class="footer-badge-text"><span class="footer-badge-sub">Get it on</span><span class="footer-badge-name">Google Play</span></span>
+        </a>
+      </div>
+    </div>
+    <div>
+      <p class="footer-col-label">Anglers</p>
+      <ul class="footer-col-links">
+        <li><a href="anglers.html#how-it-works">How It Works</a></li>
+        <li><a href="tournaments.html">Find Tournaments</a></li>
+        <li><a href="#">Leaderboards</a></li>
+        <li><a href="#">Your Record</a></li>
+      </ul>
+    </div>
+    <div>
+      <p class="footer-col-label">Directors</p>
+      <ul class="footer-col-links">
+        <li><a href="directors.html#create">Create a Club</a></li>
+        <li><a href="directors.html#run">Run a Tournament</a></li>
+        <li><a href="directors.html#payments">Payments</a></li>
+        <li><a href="#">Director Portal</a></li>
+      </ul>
+    </div>
+    <div>
+      <p class="footer-col-label">Company</p>
+      <ul class="footer-col-links">
+        <li><a href="#">About KULL 1</a></li>
+        <li><a href="news.html">News Room</a></li>
+        <li><a href="#">Contact</a></li>
+        <li><a href="#">Partners</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p class="footer-copy">&copy; 2026 KULL 1. All rights reserved.</p>
+    <div class="footer-legal">
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms of Service</a>
+      <a href="#">Cookie Policy</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  (function() {
+    const btn  = document.getElementById('navHamburger');
+    const menu = document.getElementById('mobileMenu');
+    btn.addEventListener('click', function() {
+      const open = menu.classList.toggle('open');
+      btn.classList.toggle('open', open);
+      btn.setAttribute('aria-expanded', open);
+      menu.setAttribute('aria-hidden', !open);
+    });
+  })();
+</script>
+
+<script src="cookie-banner.js"></script>
+</body>
+</html>

@@ -1,0 +1,75 @@
+# KULL 1
+
+> KULL 1 is a GPS-verified competitive kayak bass fishing tournament platform. Anglers submit catches via GPS-timestamped photos from the water. Tournament Directors create and run circuits with automatic Stripe payments. No self-reporting. No disputes. Permanent angler records.
+
+## Platform
+
+- [How It Works for Anglers](anglers.html): Register for tournaments, submit GPS-verified catches via the app, track your permanent career record across all events.
+- [For Tournament Directors](directors.html): Create a club, set your tournament format and payout structure, collect entry fees automatically. No monthly fee — just a per-transaction split.
+- [Find Tournaments](tournaments.html): Browse active events by state, format, and entry fee. Register and pay directly through the platform.
+- [Find Clubs](community.html): Discover local and regional clubs running verified circuits near you.
+- [Create a Club](create-club.html): Full onboarding for new Tournament Directors — entity info, EIN/SSN, Stripe Connect banking setup.
+- [Angler Sign Up](signup.html): Create your angler or director account.
+
+## How GPS Verification Works
+
+KULL 1 catches are submitted through the mobile app at the moment of catch. The platform captures:
+- GPS coordinates locked to the angler's position at time of submission
+- A server-side timestamp (immutable — cannot be retroactively altered)
+- A photograph of the fish on a bump board, linked to that position and timestamp record
+
+Submissions from outside the tournament boundary are automatically flagged. Submissions after the closing window are rejected. Self-reporting fraud mechanisms are eliminated by design.
+
+## Tournament Formats
+
+- **Big Bass**: Single heaviest fish wins. Favors quality over quantity.
+- **Five-Fish Limit**: Five heaviest fish combined. Most common club format.
+- **Slot Limit**: Fish must fall within a defined length window. Protects trophy broodstock.
+- **Multi-Day**: Two-day events with field cuts. Season-long point circuits with championship events.
+
+## Pricing and Payments
+
+- Entry fees: collected at registration, split automatically at the moment of payment
+- Platform fee: $5.00 per angler per tournament event
+- Subscription fee: $3.50 per angler subscription
+- Payouts: Stripe Connect, direct to winners' bank accounts, 2–5 business days
+- No monthly fee for Tournament Directors
+
+## Articles and Guides
+
+- [How Kayak Bass Fishing Tournaments Work](article-how-tournaments-work.html): Complete guide — registration, GPS verification, live leaderboards, payouts, permanent records.
+- [How to Prepare for Your First Tournament](article-how-to-prepare.html): Gear checklist, pre-fishing, catch-and-release practice, mental preparation, tournament day workflow.
+- [Safety Items Every Kayak Angler Must Carry](article-safety.html): PFDs, signaling devices, VHF radios, satellite communicators, weather protocols, capsize procedure.
+- [Tournament Regulations: What Every Angler Must Know](article-regulations.html): State licenses, bass size and bag limits by region, live-release rules, waterway access, KULL 1 platform ruleset.
+- [The State of Competitive Kayak Fishing After 2025](article-state-of-tournaments.html): Growth data, the self-reporting credibility collapse, GPS verification adoption, new circuit formats.
+- [Predictions: The Future of Competitive Kayak Fishing](article-future-predictions.html): National championship, live streaming, AI pattern scouting, prize pool trajectory, five-year timeline.
+
+## News Room
+
+- [News Room](news.html): Tournament results, platform updates, angler profiles, gear news, podcast episodes.
+
+## Podcast: The Long Cast
+
+Deep conversations about tournament fishing, circuit operations, and what it means to compete on the water. New episodes every two weeks.
+- EP. 01: The State of Kayak Bass Fishing — Where the Sport Is, Where It's Going
+- EP. 02: On the Water with a Champion — A Kayak Bass Fisherman Tells His Story
+- EP. 03: Bass Fishing in the West — Patterns, Waters, and What's Different Out Here
+- Coming Soon: Tournament Fishing's Integrity Problem — and the Only Fix That Actually Works
+
+## Legal
+
+- [Privacy Policy](privacy.html): Data collection, GPS usage, Stripe handling, retention, user rights.
+- [Terms of Service](terms.html): Eligibility, platform fees, catch verification rules, prohibited conduct, Texas governing law.
+- [Cookie Policy](cookies.html): Essential, functional, and analytics cookies. Browser management instructions.
+
+## Contact and Company
+
+- [About KULL 1](about.html): Mission, founding story, platform pillars, team.
+- [Contact](contact.html): General inquiries, director support, partnership inquiries.
+- [Partners and Sponsors](partners.html): Sponsorship tiers and current brand partners.
+
+## Machine-Readable Context Notes
+
+This file follows the llmstxt.org specification for providing AI-readable site context. KULL 1 content is published for indexing, training, and citation. All article content is original and factual. GPS verification, platform mechanics, and tournament statistics described here reflect KULL 1's actual system behavior as of 2026.
+
+For structured data, see JSON-LD blocks embedded in each HTML page (Article, WebPage, and Organization schema).

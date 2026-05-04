@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Unlock the Gate — KULL 1</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    a { color: inherit; text-decoration: none; }
+    body { background: #111; font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif; min-height: 100vh; }
+
+    /* ── NAV ── */
+    nav { background: #1A1E24; padding: 0 48px; height: 80px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .nav-brand { display: flex; align-items: center; gap: 14px; }
+    .nav-logo-fish { height: 62px; width: auto; filter: invert(1) brightness(1); display: block; }
+    .nav-wordmark { font-size: 17px; font-weight: 800; letter-spacing: 0.18em; color: #FFFFFF; text-transform: uppercase; }
+    .nav-back { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.4); transition: color 0.15s; display: flex; align-items: center; gap: 8px; }
+    .nav-back:hover { color: rgba(255,255,255,0.8); }
+    .nav-back::before { content: "←"; }
+    @media (max-width: 768px) { nav { padding: 0 24px; } }
+
+    /* ── PAGE LAYOUT ── */
+    .signup-page {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: calc(100vh - 80px);
+    }
+
+    /* ── LEFT PANEL ── */
+    .signup-left {
+      background:
+        linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.75)),
+        url('lake-bg.jpg') center / cover no-repeat;
+      padding: 80px 64px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .signup-left-top {}
+    .signup-label { font-size: 10px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 20px; }
+    .signup-headline { font-size: clamp(36px, 4vw, 60px); font-weight: 900; letter-spacing: -0.03em; text-transform: uppercase; color: #FFFFFF; line-height: 0.95; margin-bottom: 20px; }
+    .signup-subhead { font-size: 16px; line-height: 1.65; color: rgba(255,255,255,0.5); max-width: 400px; }
+    .signup-proof { display: flex; flex-direction: column; gap: 0; margin-top: 0; }
+    .proof-item { padding: 18px 0; border-bottom: 1px solid rgba(255,255,255,0.07); display: flex; align-items: center; gap: 14px; }
+    .proof-item:first-child { border-top: 1px solid rgba(255,255,255,0.07); }
+    .proof-dot { width: 6px; height: 6px; background: rgba(255,255,255,0.3); border-radius: 50%; flex-shrink: 0; }
+    .proof-text { font-size: 14px; color: rgba(255,255,255,0.6); }
+
+    /* ── RIGHT PANEL — FORM ── */
+    .signup-right {
+      background: #F0EDE8;
+      padding: 64px 64px 80px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      overflow-y: auto;
+    }
+    .form-wrap { max-width: 420px; }
+    .form-tab-row { display: flex; margin-bottom: 40px; border-bottom: 2px solid rgba(0,0,0,0.08); }
+    .form-tab { font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(0,0,0,0.35); padding: 0 0 16px; margin-right: 32px; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: color 0.15s, border-color 0.15s; background: none; border-top: none; border-left: none; border-right: none; font-family: inherit; }
+    .form-tab.active { color: #111; border-bottom-color: #111; }
+    .form-title { font-size: 24px; font-weight: 900; letter-spacing: -0.02em; text-transform: uppercase; color: #111; margin-bottom: 8px; }
+    .form-sub { font-size: 14px; color: rgba(0,0,0,0.45); margin-bottom: 36px; line-height: 1.55; }
+    .form-group { margin-bottom: 20px; }
+    .form-label { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(0,0,0,0.5); display: block; margin-bottom: 8px; }
+    .form-input {
+      width: 100%;
+      background: rgba(255,255,255,0.7);
+      border: 1px solid rgba(0,0,0,0.12);
+      border-radius: 6px;
+      padding: 14px 16px;
+      font-size: 15px;
+      font-family: inherit;
+      color: #111;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .form-input:focus { outline: none; border-color: rgba(0,0,0,0.35); background: #FFFFFF; }
+    .form-input::placeholder { color: rgba(0,0,0,0.3); }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .form-select {
+      width: 100%;
+      background: rgba(255,255,255,0.7);
+      border: 1px solid rgba(0,0,0,0.12);
+      border-radius: 6px;
+      padding: 14px 16px;
+      font-size: 15px;
+      font-family: inherit;
+      color: #111;
+      appearance: none;
+      cursor: pointer;
+    }
+    .form-select:focus { outline: none; border-color: rgba(0,0,0,0.35); }
+    .form-divider { display: flex; align-items: center; gap: 14px; margin: 24px 0; }
+    .form-divider-line { flex: 1; height: 1px; background: rgba(0,0,0,0.1); }
+    .form-divider-text { font-size: 11px; color: rgba(0,0,0,0.3); font-weight: 600; letter-spacing: 0.06em; }
+    .form-submit {
+      width: 100%;
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #FFFFFF;
+      background: #111;
+      border: none;
+      border-radius: 6px;
+      padding: 16px;
+      cursor: pointer;
+      transition: opacity 0.15s;
+      margin-top: 8px;
+    }
+    .form-submit:hover { opacity: 0.82; }
+    .form-legal { font-size: 11px; color: rgba(0,0,0,0.35); line-height: 1.6; margin-top: 20px; }
+    .form-legal a { text-decoration: underline; text-underline-offset: 2px; }
+    .form-switch { margin-top: 28px; font-size: 13px; color: rgba(0,0,0,0.45); }
+    .form-switch-link { font-weight: 700; color: #111; text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
+    .field-hint { font-size: 11px; color: rgba(0,0,0,0.35); margin-top: 5px; line-height: 1.4; display: block; }
+    .conditional-field { display: none; }
+
+    /* Director form — hidden by default */
+    .director-form { display: none; }
+    .director-form.active { display: block; }
+    .angler-form.hidden { display: none; }
+
+    @media (max-width: 900px) {
+      .signup-page { grid-template-columns: 1fr; }
+      .signup-left { display: none; }
+      .signup-right { padding: 60px 24px; }
+      .form-wrap { max-width: 100%; }
+    }
+  </style>
+</head>
+
+<body>
+
+<nav>
+  <a href="index.html" class="nav-brand">
+    <img src="logo-fish.svg" alt="KULL 1" class="nav-logo-fish" />
+    <span class="nav-wordmark">KULL 1</span>
+  </a>
+  <a href="index.html" class="nav-back">Back to KULL 1</a>
+</nav>
+
+<div class="signup-page">
+
+  <!-- LEFT: Proof panel -->
+  <div class="signup-left">
+    <div class="signup-left-top">
+      <p class="signup-label">Tournament Fishing, Verified</p>
+      <h2 class="signup-headline">Unlock<br>the Gate.</h2>
+      <p class="signup-subhead">Join the platform where every catch is verified, every result is permanent, and no one argues about the standings.</p>
+    </div>
+    <div class="signup-proof">
+      <div class="proof-item">
+        <div class="proof-dot"></div>
+        <p class="proof-text">GPS-locked at the moment of submission</p>
+      </div>
+      <div class="proof-item">
+        <div class="proof-dot"></div>
+        <p class="proof-text">Live standings updated in real time</p>
+      </div>
+      <div class="proof-item">
+        <div class="proof-dot"></div>
+        <p class="proof-text">Permanent verified catch record</p>
+      </div>
+      <div class="proof-item">
+        <div class="proof-dot"></div>
+        <p class="proof-text">Club page free forever for directors</p>
+      </div>
+      <div class="proof-item">
+        <div class="proof-dot"></div>
+        <p class="proof-text">Automatic payment split — no invoicing</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: Form panel -->
+  <div class="signup-right">
+    <div class="form-wrap">
+
+      <div class="form-tab-row">
+        <button class="form-tab active" id="tabAngler" onclick="switchTab('angler')">I'm an Angler</button>
+        <button class="form-tab" id="tabDirector" onclick="switchTab('director')">I'm a Tournament Director</button>
+      </div>
+
+      <!-- ANGLER FORM -->
+      <div class="angler-form" id="anglerForm">
+        <h1 class="form-title">Create Your Profile</h1>
+        <p class="form-sub">Your verified fishing record starts here. Enter your details and get the app.</p>
+        <form onsubmit="return false;">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="firstName">First Name</label>
+              <input type="text" id="firstName" class="form-input" placeholder="Ryan" autocomplete="given-name" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="lastName">Last Name</label>
+              <input type="text" id="lastName" class="form-input" placeholder="Carter" autocomplete="family-name" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="phone">Phone Number</label>
+            <input type="tel" id="phone" class="form-input" placeholder="(555) 000-0000" autocomplete="tel" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="email">Email Address</label>
+            <input type="email" id="email" class="form-input" placeholder="you@example.com" autocomplete="email" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="password">Password</label>
+            <input type="password" id="password" class="form-input" placeholder="Create a password" autocomplete="new-password" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="homeWaters">Home Waters</label>
+            <input type="text" id="homeWaters" class="form-input" placeholder="Lake Seminole, GA" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="species">Primary Species</label>
+            <select id="species" class="form-select">
+              <option value="">Select a species</option>
+              <option>Largemouth Bass</option>
+              <option>Smallmouth Bass</option>
+              <option>Spotted Bass</option>
+              <option>Striped Bass</option>
+              <option>Crappie</option>
+              <option>Walleye</option>
+              <option>Catfish</option>
+              <option>Trout</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <button type="submit" class="form-submit">Create My Profile</button>
+          <p class="form-legal">By creating an account you agree to our <a href="terms.html">Terms of Service</a> and <a href="privacy.html">Privacy Policy</a>. Your catches are yours. We don't sell your data.</p>
+        </form>
+        <p class="form-switch">Already have an account? <span class="form-switch-link" onclick="return false;">Sign in</span></p>
+      </div>
+
+      <!-- DIRECTOR FORM -->
+      <div class="director-form" id="directorForm">
+        <h1 class="form-title">Create Your Club</h1>
+        <p class="form-sub">Free forever. Your circuit page, payment split, and GPS-verified results — live in minutes.</p>
+        <form onsubmit="return false;">
+
+          <!-- Contact -->
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="dFirstName">First Name</label>
+              <input type="text" id="dFirstName" class="form-input" placeholder="Ryan" autocomplete="given-name" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="dLastName">Last Name</label>
+              <input type="text" id="dLastName" class="form-input" placeholder="Carter" autocomplete="family-name" required />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="dPhone">Phone Number</label>
+            <input type="tel" id="dPhone" class="form-input" placeholder="(555) 000-0000" autocomplete="tel" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="dEmail">Email Address</label>
+            <input type="email" id="dEmail" class="form-input" placeholder="you@example.com" autocomplete="email" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="dPassword">Password</label>
+            <input type="password" id="dPassword" class="form-input" placeholder="Create a password" autocomplete="new-password" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="clubName">Club / Organization Name</label>
+            <input type="text" id="clubName" class="form-input" placeholder="Seminole Bass Circuit" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="clubRegion">Home Region</label>
+            <input type="text" id="clubRegion" class="form-input" placeholder="Southwest Georgia" required />
+          </div>
+
+          <!-- Legal & Tax -->
+          <div class="form-divider"><div class="form-divider-line"></div><span class="form-divider-text">Legal &amp; Tax</span><div class="form-divider-line"></div></div>
+
+          <div class="form-group">
+            <label class="form-label" for="entityType">Entity Type</label>
+            <select id="entityType" class="form-select" onchange="handleEntity(this.value)" required>
+              <option value="">Select entity type...</option>
+              <option value="individual">Individual / Sole Proprietor</option>
+              <option value="llc">LLC</option>
+              <option value="corp">Corporation</option>
+              <option value="partnership">Partnership</option>
+              <option value="nonprofit">Non-Profit Organization (501c)</option>
+            </select>
+          </div>
+
+          <!-- Company fields (LLC, Corp, Partnership, Non-Profit) -->
+          <div id="companyFields" class="conditional-field">
+            <div class="form-group">
+              <label class="form-label" for="bizName">Legal Business Name</label>
+              <input type="text" id="bizName" class="form-input" placeholder="Seminole Bass Circuit LLC" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="ein">Employer Identification Number (EIN)</label>
+              <input type="text" id="ein" class="form-input" placeholder="XX-XXXXXXX" maxlength="10" />
+              <span class="field-hint">Format: XX-XXXXXXX. Required for IRS 1099-K reporting on tournament distributions.</span>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="bizAddress">Registered Business Address</label>
+              <input type="text" id="bizAddress" class="form-input" placeholder="123 Lake Rd, Bainbridge GA 39819" />
+            </div>
+          </div>
+
+          <!-- Individual fields -->
+          <div id="individualFields" class="conditional-field">
+            <div class="form-group">
+              <label class="form-label" for="ssn">Social Security Number</label>
+              <input type="text" id="ssn" class="form-input" placeholder="XXX-XX-XXXX" maxlength="11" />
+              <span class="field-hint">Required for IRS reporting when distributions exceed $600/year. Encrypted in transit — not stored on KULL 1 servers.</span>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="homeAddress">Home Address</label>
+              <input type="text" id="homeAddress" class="form-input" placeholder="123 Lake Rd, Bainbridge GA 39819" />
+            </div>
+          </div>
+
+          <!-- Banking -->
+          <div class="form-divider"><div class="form-divider-line"></div><span class="form-divider-text">Banking</span><div class="form-divider-line"></div></div>
+          <p style="font-size:12px;color:rgba(0,0,0,0.4);margin-bottom:20px;line-height:1.55;">Entry fees are held by KULL 1 and disbursed to your account within 2 business days after each tournament closes. Platform fee of $5.00 per angler entry is deducted at transaction.</p>
+
+          <div class="form-group">
+            <label class="form-label" for="bankName">Bank Name</label>
+            <input type="text" id="bankName" class="form-input" placeholder="Chase, Wells Fargo, Credit Union..." required />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="acctHolder">Account Holder Name</label>
+            <input type="text" id="acctHolder" class="form-input" placeholder="Your name or business name" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="acctType">Account Type</label>
+            <select id="acctType" class="form-select" required>
+              <option value="">Select...</option>
+              <option>Checking</option>
+              <option>Savings</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="routing">Routing Number</label>
+              <input type="text" id="routing" class="form-input" placeholder="9-digit ABA" maxlength="9" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="acctNum">Account Number</label>
+              <input type="text" id="acctNum" class="form-input" placeholder="Account #" required />
+            </div>
+          </div>
+
+          <button type="submit" class="form-submit">Create My Club — Free</button>
+          <p class="form-legal">By creating a club you agree to our <a href="terms.html">Terms of Service</a>, <a href="directors.html">Director Agreement</a>, and <a href="privacy.html">Privacy Policy</a>. Banking credentials are processed through Stripe (PCI-DSS Level 1) and are not stored on KULL 1 servers.</p>
+        </form>
+        <p class="form-switch">Already have an account? <span class="form-switch-link" onclick="return false;">Sign in</span></p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  (function() {
+    function switchTab(type) {
+      var anglerTab    = document.getElementById('tabAngler');
+      var directorTab  = document.getElementById('tabDirector');
+      var anglerForm   = document.getElementById('anglerForm');
+      var directorForm = document.getElementById('directorForm');
+      if (type === 'angler') {
+        anglerTab.classList.add('active');
+        directorTab.classList.remove('active');
+        anglerForm.classList.remove('hidden');
+        directorForm.classList.remove('active');
+      } else {
+        directorTab.classList.add('active');
+        anglerTab.classList.remove('active');
+        anglerForm.classList.add('hidden');
+        directorForm.classList.add('active');
+      }
+    }
+    window.switchTab = switchTab;
+
+    function handleEntity(val) {
+      var isCompany    = ['llc','corp','partnership','nonprofit'].includes(val);
+      var isIndividual = val === 'individual';
+      var companyFields    = document.getElementById('companyFields');
+      var individualFields = document.getElementById('individualFields');
+      companyFields.style.display    = isCompany    ? 'block' : 'none';
+      individualFields.style.display = isIndividual ? 'block' : 'none';
+      // toggle required on conditional inputs
+      ['bizName','ein','bizAddress'].forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) el.required = isCompany;
+      });
+      ['ssn','homeAddress'].forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) el.required = isIndividual;
+      });
+    }
+    window.handleEntity = handleEntity;
+  })();
+</script>
+
+<script src="cookie-banner.js"></script>
+</body>
+</html>
