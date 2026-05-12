@@ -161,6 +161,10 @@
 | 3 | Stripe SDK crashes without key on module load | routes/stripe.ts | RESOLVED — lazy init via getStripe() |
 | 4 | clubs.ts mounted at /api caused route collision | index.ts | RESOLVED — removed duplicate mount |
 | 5 | Director onboard route at /api/clubs/directors/onboard not /api/directors/onboard | clubs.ts | NOTED — works but differs from HANDBOOK spec |
+| 6 | expo-location geofencing only supports circles, not polygons | location-service.ts | RESOLVED — manual point-in-polygon in background task |
+| 7 | expo-camera does NOT auto-embed GPS in photos | catch.tsx | RESOLVED — manual injection via additionalExif |
+| 8 | Stripe Destination Charges wrong for escrow model | stripe.ts | RESOLVED — switched to Separate Charges and Transfers |
+| 9 | FileSystem.documentDirectory renamed to FileSystem.Paths.document in SDK 54+ | offline-queue.ts | RESOLVED |
 
 ---
 
@@ -172,6 +176,9 @@
 | 2026-05-12 | Neon PostgreSQL over Railway Postgres | Already use Neon, shared infra knowledge |
 | 2026-05-12 | Node.js/Express backend | HANDBOOK spec, matches frontend ecosystem |
 | 2026-05-12 | Stripe Connect Express | Handles KYC, 1099-K, reduces our compliance burden |
+| 2026-05-12 | Separate Charges over Destination Charges | Platform needs to hold funds as escrow until tournament ends |
+| 2026-05-12 | Manual point-in-polygon over native geofencing | expo-location only supports circles; tournament boundaries are polygons |
+| 2026-05-12 | Manual GPS EXIF injection | expo-camera doesn't auto-embed GPS; must use additionalExif param |
 | 2026-05-12 | Drizzle ORM over Prisma | Lighter, SQL-like, better for this project size |
 | 2026-05-12 | Separate kull1 database in existing Neon project | Avoids table conflicts with IB365/neondb |
 | 2026-05-12 | Dark mode default for app | Matches website design system (#111 bg) |
