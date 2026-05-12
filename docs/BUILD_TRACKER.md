@@ -126,15 +126,37 @@
 
 ---
 
-## PHASE 3: Wire Website to Live API
+## PHASE 3: SaaS Multi-Tenancy + Club Template (ARCHITECTURE MERGED)
 
-- [ ] tournaments.html — live tournament listings from API
-- [ ] community.html — live club listings from API
-- [ ] signup.html — angler registration wired to API
-- [ ] signup.html — director registration wired to API
-- [ ] create-club.html — full onboarding wired to API
-- [ ] Login flow implemented
-- [ ] App Store badge links updated
+**KEY CHANGE:** Yakabass frontend IS the club template. Yakabass FastAPI IS the unified backend.
+kull1-api (Node.js) is superseded.
+
+### Backend (yakabass FastAPI)
+- [V] Migration 016 ran — lat/lng/weight_oz/status on fish_catches, boundary_geojson on tournaments
+- [B] POST /api/catches/submit — GPS catch with point-in-polygon + time validation
+- [B] GET /api/catches/tournament/:id — catches for leaderboard
+- [B] POST /api/admin/stripe/onboard — Stripe Connect Express for directors
+- [B] POST /api/admin/stripe/payment-intent — Separate Charges (escrow)
+- [B] POST /api/admin/stripe/payout — Prize distribution
+- [V] CORS updated for *.kull1.com
+
+### Frontend (yakabass Next.js)
+- [B] Smart homepage — kull1.com → Coming Soon, subdomains → Club template
+- [B] Middleware subdomain routing — extracts tenant slug from *.kull1.com
+- [B] getTenantSlug() handles *.kull1.com + *.yakabass.com + localhost
+- [B] PublicLayout hides header/footer on root domain
+- [B] ClubHomepage component restored from pre-Coming-Soon
+- [T] TenantProvider loads branding + injects CSS variables
+- [T] Frontend type-checks clean
+
+### Vercel Domains
+- [V] yakabass.kull1.com added to Vercel project
+- [ ] Cloudflare CNAME: yakabass.kull1.com → cname.vercel-dns.com (Ryan)
+- [ ] Wildcard *.kull1.com for future clubs
+
+### Expo App
+- [B] API client updated to point at yakabass FastAPI backend
+- [B] Catch endpoints updated to /api/catches/submit
 
 ---
 
@@ -165,6 +187,8 @@
 | 7 | expo-camera does NOT auto-embed GPS in photos | catch.tsx | RESOLVED — manual injection via additionalExif |
 | 8 | Stripe Destination Charges wrong for escrow model | stripe.ts | RESOLVED — switched to Separate Charges and Transfers |
 | 9 | FileSystem.documentDirectory renamed to FileSystem.Paths.document in SDK 54+ | offline-queue.ts | RESOLVED |
+| 10 | kull1-api (Node.js) superseded by yakabass FastAPI | architecture | RESOLVED — unified backend |
+| 11 | Build fails locally without Clerk keys (prerender) | ~offline/page.tsx | NOTED — builds on Vercel with injected env vars |
 
 ---
 
@@ -182,6 +206,9 @@
 | 2026-05-12 | Drizzle ORM over Prisma | Lighter, SQL-like, better for this project size |
 | 2026-05-12 | Separate kull1 database in existing Neon project | Avoids table conflicts with IB365/neondb |
 | 2026-05-12 | Dark mode default for app | Matches website design system (#111 bg) |
+| 2026-05-12 | Yakabass FastAPI replaces kull1-api Node.js | Yakabass has 30+ routes, 129 features, multi-tenant — more mature |
+| 2026-05-12 | Smart homepage by domain detection | kull1.com → Coming Soon, *.kull1.com → Club template |
+| 2026-05-12 | Cookie-based tenant slug (set by middleware) | More reliable than subdomain parsing in client-side JS |
 
 ---
 
