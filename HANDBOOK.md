@@ -456,7 +456,7 @@ catch_disputes(id, catch_id, raised_by, reason, resolved_at, resolution)
 
 -- Results
 tournament_leaderboards(tournament_id, user_id, rank, total_weight_oz, catch_count, updated_at)
-season_standings(club_id, season_year, user_id, points, rank, updated_at)
+aoy_standings(club_id, season_year, user_id, points, rank, updated_at)  -- Angler of the Year
 
 -- Financials
 payments(id, tournament_id, user_id, amount_cents, platform_fee_cents, stripe_payment_intent_id, status, created_at)
@@ -485,7 +485,7 @@ payouts(id, tournament_id, user_id, amount_cents, stripe_transfer_id, paid_at, s
 | GET | `/api/tournaments/:id/leaderboard` | None | Live standings |
 | GET | `/api/clubs` | None | Browse clubs: ?region= |
 | GET | `/api/clubs/:id` | None | Club page + past tournaments |
-| GET | `/api/clubs/:id/standings` | None | Season standings |
+| GET | `/api/clubs/:id/standings` | None | Angler of the Year standings |
 | POST | `/api/stripe/webhook` | Stripe-Signature | Handle Stripe events |
 | GET | `/health` | None | `{"status":"ok","version":"1.0.0"}` |
 

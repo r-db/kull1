@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Feed — KULL 1</title>
+  <meta name="description" content="The KULL 1 community feed. Real anglers, verified catches, tournament talk. Follow the sport in real time." />
+  <meta name="robots" content="index, follow" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    a { color: inherit; text-decoration: none; }
+    body { background: #111; font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif; color: #fff; min-height: 100vh; }
+
+    /* ── NAV ── */
+    nav { background: #1A1E24; padding: 0 48px; height: 80px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.06); position: sticky; top: 0; z-index: 200; }
+    .nav-brand { display: flex; align-items: center; gap: 14px; }
+    .nav-logo-fish { height: 62px; width: auto; filter: invert(1) brightness(1); display: block; }
+    .nav-wordmark { font-size: 17px; font-weight: 800; letter-spacing: 0.18em; color: #FFFFFF; text-transform: uppercase; }
+    .nav-links { display: flex; align-items: center; gap: 40px; list-style: none; }
+    .nav-links a { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.55); transition: color 0.15s; }
+    .nav-links a:hover, .nav-links a.active { color: #fff; }
+    .nav-cta { font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: #FFFFFF; border: 1.5px solid rgba(255,255,255,0.5); padding: 10px 22px; border-radius: 4px; transition: border-color 0.15s; }
+    .nav-cta:hover { border-color: #fff; }
+    @media (max-width: 768px) { nav { padding: 0 24px; } .nav-links, .nav-cta { display: none; } }
+
+    /* ── LAYOUT ── */
+    .feed-layout { max-width: 1100px; margin: 0 auto; padding: 48px 24px; display: grid; grid-template-columns: 1fr 320px; gap: 32px; }
+    @media (max-width: 900px) { .feed-layout { grid-template-columns: 1fr; } .feed-sidebar { display: none; } }
+
+    /* ── COMPOSE ── */
+    .compose-box { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 20px; margin-bottom: 24px; }
+    .compose-row { display: flex; gap: 14px; align-items: flex-start; }
+    .compose-avatar { width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: rgba(255,255,255,0.4); flex-shrink: 0; }
+    .compose-right { flex: 1; }
+    .compose-input { width: 100%; background: transparent; border: none; outline: none; resize: none; color: #fff; font-size: 16px; font-family: inherit; line-height: 1.55; min-height: 72px; }
+    .compose-input::placeholder { color: rgba(255,255,255,0.25); }
+    .compose-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 14px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.06); }
+    .compose-counter { font-size: 13px; color: rgba(255,255,255,0.3); }
+    .compose-counter.warn { color: rgba(255,160,0,0.8); }
+    .compose-counter.over { color: rgba(220,60,60,0.9); }
+    .compose-submit { font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: #111; background: #FFFFFF; border: none; border-radius: 4px; padding: 10px 22px; cursor: pointer; transition: opacity 0.15s; font-family: inherit; }
+    .compose-submit:hover { opacity: 0.85; }
+    .compose-submit:disabled { opacity: 0.3; cursor: not-allowed; }
+
+    /* ── FILTER PILLS ── */
+    .feed-filters { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+    .feed-pill { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 7px 16px; border-radius: 100px; border: 1px solid rgba(255,255,255,0.12); color: rgba(255,255,255,0.45); cursor: pointer; background: transparent; font-family: inherit; transition: all 0.15s; }
+    .feed-pill.active, .feed-pill:hover { background: #FFFFFF; color: #111; border-color: #FFFFFF; }
+
+    /* ── POSTS ── */
+    .post { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; padding: 20px; margin-bottom: 12px; transition: border-color 0.15s; }
+    .post:hover { border-color: rgba(255,255,255,0.12); }
+    .post-header { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 12px; }
+    .post-avatar { width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; color: rgba(255,255,255,0.6); flex-shrink: 0; }
+    .post-meta { flex: 1; }
+    .post-name { font-size: 14px; font-weight: 700; color: #FFFFFF; }
+    .post-handle { font-size: 12px; color: rgba(255,255,255,0.3); margin-top: 1px; }
+    .post-badge { display: inline-block; font-size: 9px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; padding: 2px 7px; border-radius: 3px; margin-left: 8px; vertical-align: middle; }
+    .post-badge.angler { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.5); }
+    .post-badge.director { background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.7); }
+    .post-badge.enthusiast { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.35); }
+    .post-time { font-size: 11px; color: rgba(255,255,255,0.2); white-space: nowrap; }
+    .post-content { font-size: 15px; line-height: 1.65; color: rgba(255,255,255,0.85); margin-bottom: 16px; word-break: break-word; }
+    .post-tag { color: rgba(255,255,255,0.5); }
+    .post-tag:hover { color: #FFFFFF; }
+    .post-tournament-ref { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: rgba(255,255,255,0.35); background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07); border-radius: 4px; padding: 4px 10px; margin-bottom: 12px; }
+    .post-actions { display: flex; gap: 24px; align-items: center; }
+    .post-action { display: flex; align-items: center; gap: 6px; font-size: 13px; color: rgba(255,255,255,0.3); cursor: pointer; background: none; border: none; font-family: inherit; transition: color 0.15s; padding: 0; }
+    .post-action:hover { color: rgba(255,255,255,0.7); }
+    .post-action.liked { color: #FFFFFF; }
+    .post-action.disliked { color: rgba(255,100,100,0.8); }
+    .post-action svg { width: 16px; height: 16px; }
+
+    /* ── SIDEBAR ── */
+    .sidebar-card { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; padding: 20px; margin-bottom: 20px; }
+    .sidebar-title { font-size: 11px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-bottom: 16px; }
+    .sidebar-tournament { display: flex; flex-direction: column; gap: 3px; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .sidebar-tournament:last-child { border-bottom: none; padding-bottom: 0; }
+    .sidebar-tournament:first-child { padding-top: 0; }
+    .sidebar-t-name { font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.8); }
+    .sidebar-t-meta { font-size: 11px; color: rgba(255,255,255,0.3); }
+    .live-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #4ADE80; margin-right: 5px; animation: livePulse 1.4s ease-in-out infinite; }
+    @keyframes livePulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+    .sidebar-follow-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .sidebar-follow-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .sidebar-follow-row:first-child { padding-top: 0; }
+    .sidebar-follow-avatar { width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.07); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.5); flex-shrink: 0; }
+    .sidebar-follow-name { flex: 1; font-size: 13px; color: rgba(255,255,255,0.7); }
+    .sidebar-follow-btn { font-size: 10px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; padding: 4px 10px; border: 1px solid rgba(255,255,255,0.2); border-radius: 3px; color: rgba(255,255,255,0.5); background: none; cursor: pointer; font-family: inherit; transition: all 0.15s; }
+    .sidebar-follow-btn:hover { border-color: #fff; color: #fff; }
+    .sidebar-follow-btn.following { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.15); }
+
+    footer { background: #0D0F12; border-top: 1px solid rgba(255,255,255,0.06); padding: 40px 48px 32px; margin-top: 64px; }
+    .footer-bottom { max-width: 1280px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+    .footer-copy { font-size: 12px; color: rgba(255,255,255,0.2); }
+    .footer-legal { display: flex; gap: 24px; }
+    .footer-legal a { font-size: 12px; color: rgba(255,255,255,0.2); transition: color 0.15s; }
+    .footer-legal a:hover { color: rgba(255,255,255,0.5); }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-brand">
+    <img src="logo-fish.svg" alt="KULL 1" class="nav-logo-fish" />
+    <span class="nav-wordmark">KULL 1</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="anglers.html">Anglers</a></li>
+    <li><a href="directors.html">Tournament Directors</a></li>
+    <li><a href="community.html">Clubs</a></li>
+    <li><a href="feed.html" class="active">Feed</a></li>
+    <li><a href="news.html">News Room</a></li>
+  </ul>
+  <a href="signup.html" class="nav-cta">Unlock the Gate</a>
+</nav>
+
+<div class="feed-layout">
+
+  <!-- MAIN COLUMN -->
+  <div class="feed-main">
+
+    <!-- Compose -->
+    <div class="compose-box">
+      <div class="compose-row">
+        <div class="compose-avatar">?</div>
+        <div class="compose-right">
+          <textarea class="compose-input" id="composeInput" placeholder="What's happening on the water..." maxlength="280" oninput="updateCounter()"></textarea>
+          <div class="compose-footer">
+            <span class="compose-counter" id="charCounter">280</span>
+            <button class="compose-submit" id="composeSubmit" onclick="submitPost()" disabled>Post</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filter pills -->
+    <div class="feed-filters">
+      <button class="feed-pill active" data-filter="all" onclick="filterFeed(this)">All</button>
+      <button class="feed-pill" data-filter="anglers" onclick="filterFeed(this)">Anglers</button>
+      <button class="feed-pill" data-filter="directors" onclick="filterFeed(this)">Directors</button>
+      <button class="feed-pill" data-filter="tournaments" onclick="filterFeed(this)">Tournaments</button>
+      <button class="feed-pill" data-filter="enthusiasts" onclick="filterFeed(this)">Enthusiasts</button>
+    </div>
+
+    <!-- Posts -->
+    <div id="feedPosts">
+
+      <div class="post" data-role="angler">
+        <div class="post-header">
+          <div class="post-avatar">JT</div>
+          <div class="post-meta">
+            <div class="post-name">Jake Tanner <span class="post-badge angler">Angler</span></div>
+            <div class="post-handle">@jaketanner</div>
+          </div>
+          <div class="post-time">2h</div>
+        </div>
+        <div class="post-tournament-ref">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="rgba(255,255,255,0.3)" stroke-width="1.2"/><path d="M6 3.5v3l2 1" stroke="rgba(255,255,255,0.3)" stroke-width="1.2" stroke-linecap="round"/></svg>
+          Lake Seminole Spring Open
+        </div>
+        <p class="post-content">Just submitted my fifth fish. 4.2 lbs largemouth on a swim jig off the north bank — coordinates locked, timestamp clean. Leaderboard showing me at 3rd. This GPS system is the real deal. No disputes possible. <span class="post-tag">#KULL1</span> <span class="post-tag">#LakeSeminole</span></p>
+        <div class="post-actions">
+          <button class="post-action" onclick="react(this,'like')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z"/><path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
+            <span>48</span>
+          </button>
+          <button class="post-action" onclick="react(this,'dislike')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3H10z"/><path d="M17 2h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"/></svg>
+            <span>2</span>
+          </button>
+          <button class="post-action" onclick="toggleComments(this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            <span>12</span>
+          </button>
+          <button class="post-action">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="post" data-role="director">
+        <div class="post-header">
+          <div class="post-avatar">MC</div>
+          <div class="post-meta">
+            <div class="post-name">Marcus Cole <span class="post-badge director">Director</span></div>
+            <div class="post-handle">@marcuscole_td</div>
+          </div>
+          <div class="post-time">4h</div>
+        </div>
+        <p class="post-content">Registration for the Okefenokee Summer Circuit is now live. 42 spots, $75 entry, Big Bass format. Five-fish limit next round. Payment splits automatically — anglers pay, I don't touch it. That's the whole point. <span class="post-tag">#KULL1</span> <span class="post-tag">#OkefenokeeCircuit</span></p>
+        <div class="post-actions">
+          <button class="post-action" onclick="react(this,'like')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z"/><path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
+            <span>91</span>
+          </button>
+          <button class="post-action" onclick="react(this,'dislike')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3H10z"/><path d="M17 2h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"/></svg>
+            <span>0</span>
+          </button>
+          <button class="post-action" onclick="toggleComments(this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            <span>7</span>
+          </button>
+          <button class="post-action">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="post" data-role="enthusiast">
+        <div class="post-header">
+          <div class="post-avatar">SR</div>
+          <div class="post-meta">
+            <div class="post-name">Sarah Reyes <span class="post-badge enthusiast">Enthusiast</span></div>
+            <div class="post-handle">@sarah_reyes_kayak</div>
+          </div>
+          <div class="post-time">6h</div>
+        </div>
+        <p class="post-content">Been following the Lake Seminole results all morning. Can't believe how different this feels from the old tournaments. Real-time standings. No one arguing at the weigh-in. Just watching the leaderboard move with actual catch data. <span class="post-tag">#KULL1</span></p>
+        <div class="post-actions">
+          <button class="post-action" onclick="react(this,'like')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z"/><path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
+            <span>34</span>
+          </button>
+          <button class="post-action" onclick="react(this,'dislike')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3H10z"/><path d="M17 2h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"/></svg>
+            <span>1</span>
+          </button>
+          <button class="post-action" onclick="toggleComments(this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            <span>5</span>
+          </button>
+          <button class="post-action">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="post" data-role="angler">
+        <div class="post-header">
+          <div class="post-avatar">DW</div>
+          <div class="post-meta">
+            <div class="post-name">DeShawn Williams <span class="post-badge angler">Angler</span></div>
+            <div class="post-handle">@deshawn_w</div>
+          </div>
+          <div class="post-time">9h</div>
+        </div>
+        <p class="post-content">Morning bite was slow. Switched from a buzzbait to a finesse drop shot at 18ft — picked up a 3.7 in about 40 minutes. Wind died around 8:30 and everything went quiet. Going to sit on structure until the afternoon wind kicks in. Patient. <span class="post-tag">#Finesse</span> <span class="post-tag">#KULL1</span></p>
+        <div class="post-actions">
+          <button class="post-action" onclick="react(this,'like')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z"/><path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
+            <span>62</span>
+          </button>
+          <button class="post-action" onclick="react(this,'dislike')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3H10z"/><path d="M17 2h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"/></svg>
+            <span>0</span>
+          </button>
+          <button class="post-action" onclick="toggleComments(this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            <span>19</span>
+          </button>
+          <button class="post-action">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SIDEBAR -->
+  <aside class="feed-sidebar">
+
+    <div class="sidebar-card">
+      <div class="sidebar-title">Live Now</div>
+      <div class="sidebar-tournament">
+        <div class="sidebar-t-name"><span class="live-dot"></span>Lake Seminole Spring Open</div>
+        <div class="sidebar-t-meta">214 anglers &nbsp;·&nbsp; 6h remaining</div>
+      </div>
+      <div class="sidebar-tournament">
+        <div class="sidebar-t-name"><span class="live-dot"></span>Okefenokee Day One</div>
+        <div class="sidebar-t-meta">88 anglers &nbsp;·&nbsp; 2h remaining</div>
+      </div>
+    </div>
+
+    <div class="sidebar-card">
+      <div class="sidebar-title">Who to Follow</div>
+      <div class="sidebar-follow-row">
+        <div class="sidebar-follow-avatar">JT</div>
+        <div class="sidebar-follow-name">Jake Tanner</div>
+        <button class="sidebar-follow-btn" onclick="toggleFollow(this)">Follow</button>
+      </div>
+      <div class="sidebar-follow-row">
+        <div class="sidebar-follow-avatar">MC</div>
+        <div class="sidebar-follow-name">Marcus Cole</div>
+        <button class="sidebar-follow-btn" onclick="toggleFollow(this)">Follow</button>
+      </div>
+      <div class="sidebar-follow-row">
+        <div class="sidebar-follow-avatar">LR</div>
+        <div class="sidebar-follow-name">Lee Robinson</div>
+        <button class="sidebar-follow-btn" onclick="toggleFollow(this)">Follow</button>
+      </div>
+      <div class="sidebar-follow-row">
+        <div class="sidebar-follow-avatar">PH</div>
+        <div class="sidebar-follow-name">Paula Hendrix</div>
+        <button class="sidebar-follow-btn" onclick="toggleFollow(this)">Follow</button>
+      </div>
+    </div>
+
+    <div class="sidebar-card">
+      <div class="sidebar-title">Trending Tags</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;">
+        <span style="font-size:13px;color:rgba(255,255,255,0.5);cursor:pointer;" onclick="this.style.color='#fff'">#KULL1</span>
+        <span style="font-size:13px;color:rgba(255,255,255,0.5);cursor:pointer;" onclick="this.style.color='#fff'">#LakeSeminole</span>
+        <span style="font-size:13px;color:rgba(255,255,255,0.5);cursor:pointer;" onclick="this.style.color='#fff'">#BigBass</span>
+        <span style="font-size:13px;color:rgba(255,255,255,0.5);cursor:pointer;" onclick="this.style.color='#fff'">#GPSVerified</span>
+        <span style="font-size:13px;color:rgba(255,255,255,0.5);cursor:pointer;" onclick="this.style.color='#fff'">#KayakFishing</span>
+        <span style="font-size:13px;color:rgba(255,255,255,0.5);cursor:pointer;" onclick="this.style.color='#fff'">#Finesse</span>
+      </div>
+    </div>
+
+  </aside>
+</div>
+
+<footer>
+  <div class="footer-bottom">
+    <p class="footer-copy">&copy; 2026 KULL 1. All rights reserved.</p>
+    <div class="footer-legal">
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="terms.html">Terms of Service</a>
+      <a href="cookies.html">Cookie Policy</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Character counter
+  function updateCounter() {
+    var input = document.getElementById('composeInput');
+    var counter = document.getElementById('charCounter');
+    var btn = document.getElementById('composeSubmit');
+    var remaining = 280 - input.value.length;
+    counter.textContent = remaining;
+    counter.className = 'compose-counter' + (remaining < 0 ? ' over' : remaining < 30 ? ' warn' : '');
+    btn.disabled = input.value.trim().length === 0 || remaining < 0;
+  }
+
+  function submitPost() {
+    var input = document.getElementById('composeInput');
+    if (!input.value.trim()) return;
+    var posts = document.getElementById('feedPosts');
+    var now = new Date();
+    var el = document.createElement('div');
+    el.className = 'post';
+    el.dataset.role = 'angler';
+    el.innerHTML = '<div class="post-header"><div class="post-avatar">?</div><div class="post-meta"><div class="post-name">You</div><div class="post-handle">@you</div></div><div class="post-time">now</div></div><p class="post-content">' + escapeHtml(input.value) + '</p><div class="post-actions"><button class="post-action" onclick="react(this,\'like\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z"/><path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg><span>0</span></button></div>';
+    posts.insertBefore(el, posts.firstChild);
+    input.value = '';
+    updateCounter();
+  }
+
+  function escapeHtml(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function react(btn, type) {
+    var count = btn.querySelector('span');
+    var post = btn.closest('.post-actions');
+    var likeBtn = post.querySelector('.post-action:nth-child(1)');
+    var dislikeBtn = post.querySelector('.post-action:nth-child(2)');
+    var isActive = btn.classList.contains(type === 'like' ? 'liked' : 'disliked');
+
+    // Remove both states
+    likeBtn.classList.remove('liked');
+    dislikeBtn.classList.remove('disliked');
+
+    if (!isActive) {
+      btn.classList.add(type === 'like' ? 'liked' : 'disliked');
+      count.textContent = parseInt(count.textContent) + 1;
+    } else {
+      count.textContent = Math.max(0, parseInt(count.textContent) - 1);
+    }
+  }
+
+  function toggleComments(btn) {
+    // Placeholder — in production this opens a comment thread
+    var post = btn.closest('.post');
+    var existing = post.querySelector('.comment-thread');
+    if (existing) { existing.remove(); return; }
+    var thread = document.createElement('div');
+    thread.className = 'comment-thread';
+    thread.style.cssText = 'margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.06);';
+    thread.innerHTML = '<div style="display:flex;gap:10px;"><textarea style="flex:1;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:6px;padding:10px 14px;color:#fff;font-family:inherit;font-size:13px;resize:none;min-height:48px;outline:none;" placeholder="Reply... (280 chars max)" maxlength="280"></textarea><button style="font-size:10px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:#111;background:#fff;border:none;border-radius:4px;padding:0 14px;cursor:pointer;font-family:inherit;white-space:nowrap;">Reply</button></div>';
+    post.appendChild(thread);
+  }
+
+  function filterFeed(pill) {
+    document.querySelectorAll('.feed-pill').forEach(function(p) { p.classList.remove('active'); });
+    pill.classList.add('active');
+    var filter = pill.dataset.filter;
+    document.querySelectorAll('#feedPosts .post').forEach(function(post) {
+      if (filter === 'all') { post.style.display = ''; return; }
+      var map = { anglers: 'angler', directors: 'director', enthusiasts: 'enthusiast', tournaments: 'director' };
+      post.style.display = post.dataset.role === (map[filter] || filter) ? '' : 'none';
+    });
+  }
+
+  function toggleFollow(btn) {
+    if (btn.classList.contains('following')) {
+      btn.classList.remove('following');
+      btn.textContent = 'Follow';
+    } else {
+      btn.classList.add('following');
+      btn.textContent = 'Following';
+    }
+  }
+</script>
+
+<script src="cookie-banner.js"></script>
+</body>
+</html>

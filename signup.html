@@ -112,8 +112,13 @@
     .form-submit:hover { opacity: 0.82; }
     .form-legal { font-size: 11px; color: rgba(0,0,0,0.35); line-height: 1.6; margin-top: 20px; }
     .form-legal a { text-decoration: underline; text-underline-offset: 2px; }
-    .form-switch { margin-top: 28px; font-size: 13px; color: rgba(0,0,0,0.45); }
-    .form-switch-link { font-weight: 700; color: #111; text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
+    .form-switch { margin-top: 28px; font-size: 13px; }
+    .form-switch-wrap { display: inline-flex; align-items: center; gap: 10px; background: #111; border-radius: 6px; padding: 10px 18px; color: rgba(255,255,255,0.6); }
+    .form-switch-link { font-weight: 800; color: #FFFFFF; cursor: pointer; letter-spacing: 0.04em; animation: signinPulse 2.4s ease-in-out infinite; }
+    @keyframes signinPulse {
+      0%, 100% { text-shadow: 0 0 0px rgba(255,255,255,0); }
+      50% { text-shadow: 0 0 12px rgba(255,255,255,0.7), 0 0 24px rgba(255,255,255,0.3); }
+    }
     .field-hint { font-size: 11px; color: rgba(0,0,0,0.35); margin-top: 5px; line-height: 1.4; display: block; }
     .conditional-field { display: none; }
 
@@ -181,6 +186,7 @@
       <div class="form-tab-row">
         <button class="form-tab active" id="tabAngler" onclick="switchTab('angler')">I'm an Angler</button>
         <button class="form-tab" id="tabDirector" onclick="switchTab('director')">I'm a Tournament Director</button>
+        <button class="form-tab" id="tabEnthusiast" onclick="switchTab('enthusiast')">I'm an Enthusiast</button>
       </div>
 
       <!-- ANGLER FORM -->
@@ -232,7 +238,7 @@
           <button type="submit" class="form-submit">Create My Profile</button>
           <p class="form-legal">By creating an account you agree to our <a href="terms.html">Terms of Service</a> and <a href="privacy.html">Privacy Policy</a>. Your catches are yours. We don't sell your data.</p>
         </form>
-        <p class="form-switch">Already have an account? <span class="form-switch-link" onclick="return false;">Sign in</span></p>
+        <p class="form-switch"><span class="form-switch-wrap">Already have an account? <a href="login.html" class="form-switch-link">Sign In</a></span></p>
       </div>
 
       <!-- DIRECTOR FORM -->
@@ -352,7 +358,57 @@
           <button type="submit" class="form-submit">Create My Club — Free</button>
           <p class="form-legal">By creating a club you agree to our <a href="terms.html">Terms of Service</a>, <a href="directors.html">Director Agreement</a>, and <a href="privacy.html">Privacy Policy</a>. Banking credentials are processed through Stripe (PCI-DSS Level 1) and are not stored on KULL 1 servers.</p>
         </form>
-        <p class="form-switch">Already have an account? <span class="form-switch-link" onclick="return false;">Sign in</span></p>
+        <p class="form-switch"><span class="form-switch-wrap">Already have an account? <a href="login.html" class="form-switch-link">Sign In</a></span></p>
+      </div>
+
+      <!-- ENTHUSIAST FORM -->
+      <div class="director-form" id="enthusiastForm">
+        <h1 class="form-title">Join the Community</h1>
+        <p class="form-sub">Follow tournaments, track anglers, and be part of verified competitive fishing.</p>
+        <form onsubmit="return false;">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="eName">First Name</label>
+              <input type="text" id="eName" class="form-input" placeholder="Ryan" autocomplete="given-name" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="eLastName">Last Name</label>
+              <input type="text" id="eLastName" class="form-input" placeholder="Carter" autocomplete="family-name" required />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="ePhone">Phone Number</label>
+            <input type="tel" id="ePhone" class="form-input" placeholder="(555) 000-0000" autocomplete="tel" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="eEmail">Email Address</label>
+            <input type="email" id="eEmail" class="form-input" placeholder="you@example.com" autocomplete="email" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="ePassword">Password</label>
+            <input type="password" id="ePassword" class="form-input" placeholder="Create a password" autocomplete="new-password" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="eState">Home State</label>
+            <input type="text" id="eState" class="form-input" placeholder="Georgia" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="eInterest">Primary Interest</label>
+            <select id="eInterest" class="form-select">
+              <option value="">Select your interest</option>
+              <option value="spectator">Tournament Spectator</option>
+              <option value="kayaker">Kayaking Enthusiast</option>
+              <option value="fan">Fishing Fan</option>
+              <option value="photographer">On-Water Photographer</option>
+              <option value="media">Media / Content Creator</option>
+              <option value="sponsor">Sponsor / Brand</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <button type="submit" class="form-submit">Join KULL 1</button>
+          <p class="form-legal">By joining you agree to our <a href="terms.html">Terms of Service</a> and <a href="privacy.html">Privacy Policy</a>. We don't sell your data.</p>
+        </form>
+        <p class="form-switch"><span class="form-switch-wrap">Already have an account? <a href="login.html" class="form-switch-link">Sign In</a></span></p>
       </div>
 
     </div>
@@ -362,20 +418,25 @@
 <script>
   (function() {
     function switchTab(type) {
-      var anglerTab    = document.getElementById('tabAngler');
-      var directorTab  = document.getElementById('tabDirector');
-      var anglerForm   = document.getElementById('anglerForm');
-      var directorForm = document.getElementById('directorForm');
+      var allTabs  = ['tabAngler','tabDirector','tabEnthusiast'];
+      var anglerForm     = document.getElementById('anglerForm');
+      var directorForm   = document.getElementById('directorForm');
+      var enthusiastForm = document.getElementById('enthusiastForm');
+
+      allTabs.forEach(function(id) { document.getElementById(id).classList.remove('active'); });
+      anglerForm.classList.add('hidden');
+      directorForm.classList.remove('active');
+      enthusiastForm.classList.remove('active');
+
       if (type === 'angler') {
-        anglerTab.classList.add('active');
-        directorTab.classList.remove('active');
+        document.getElementById('tabAngler').classList.add('active');
         anglerForm.classList.remove('hidden');
-        directorForm.classList.remove('active');
-      } else {
-        directorTab.classList.add('active');
-        anglerTab.classList.remove('active');
-        anglerForm.classList.add('hidden');
+      } else if (type === 'director') {
+        document.getElementById('tabDirector').classList.add('active');
         directorForm.classList.add('active');
+      } else {
+        document.getElementById('tabEnthusiast').classList.add('active');
+        enthusiastForm.classList.add('active');
       }
     }
     window.switchTab = switchTab;

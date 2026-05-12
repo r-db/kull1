@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Profile — KULL 1</title>
+  <meta name="description" content="KULL 1 angler and community profile. Verified career record, tournament history, social feed." />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    a { color: inherit; text-decoration: none; }
+    body { background: #111; font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif; color: #fff; }
+
+    /* ── NAV ── */
+    nav { background: #1A1E24; padding: 0 48px; height: 80px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.06); position: sticky; top: 0; z-index: 200; }
+    .nav-brand { display: flex; align-items: center; gap: 14px; }
+    .nav-logo-fish { height: 62px; width: auto; filter: invert(1) brightness(1); display: block; }
+    .nav-wordmark { font-size: 17px; font-weight: 800; letter-spacing: 0.18em; color: #FFFFFF; text-transform: uppercase; }
+    .nav-links { display: flex; align-items: center; gap: 40px; list-style: none; }
+    .nav-links a { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.55); transition: color 0.15s; }
+    .nav-links a:hover { color: #fff; }
+    .nav-cta { font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: #FFFFFF; border: 1.5px solid rgba(255,255,255,0.5); padding: 10px 22px; border-radius: 4px; transition: border-color 0.15s; }
+    .nav-cta:hover { border-color: #fff; }
+    @media (max-width: 768px) { nav { padding: 0 24px; } .nav-links, .nav-cta { display: none; } }
+
+    /* ── PROFILE HEADER ── */
+    .profile-header { background: #1A1E24; border-bottom: 1px solid rgba(255,255,255,0.06); padding: 48px 48px 0; }
+    .profile-header-inner { max-width: 900px; margin: 0 auto; }
+    .profile-top { display: flex; align-items: flex-end; gap: 24px; margin-bottom: 24px; }
+    .profile-avatar-wrap { position: relative; }
+    .profile-avatar { width: 88px; height: 88px; border-radius: 50%; background: rgba(255,255,255,0.08); border: 3px solid #1A1E24; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 800; color: rgba(255,255,255,0.5); }
+    .profile-verified { position: absolute; bottom: 2px; right: 2px; width: 22px; height: 22px; background: #FFFFFF; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+    .profile-info { flex: 1; padding-bottom: 4px; }
+    .profile-name { font-size: 22px; font-weight: 900; letter-spacing: -0.02em; color: #FFFFFF; }
+    .profile-handle { font-size: 13px; color: rgba(255,255,255,0.35); margin-top: 2px; }
+    .profile-role-badge { display: inline-block; font-size: 9px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; padding: 3px 9px; border: 1px solid rgba(255,255,255,0.15); border-radius: 3px; color: rgba(255,255,255,0.45); margin-top: 8px; }
+    .profile-actions { display: flex; gap: 10px; align-items: center; padding-bottom: 4px; }
+    .profile-follow-btn { font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; padding: 10px 22px; border-radius: 4px; cursor: pointer; font-family: inherit; transition: all 0.15s; background: #FFFFFF; color: #111; border: none; }
+    .profile-follow-btn:hover { opacity: 0.85; }
+    .profile-follow-btn.following { background: transparent; color: rgba(255,255,255,0.6); border: 1px solid rgba(255,255,255,0.2); }
+    .profile-bio { font-size: 14px; line-height: 1.65; color: rgba(255,255,255,0.55); margin-bottom: 20px; max-width: 560px; }
+    .profile-stats { display: flex; gap: 32px; margin-bottom: 0; padding-bottom: 20px; }
+    .profile-stat { text-align: left; cursor: pointer; }
+    .profile-stat-num { font-size: 18px; font-weight: 800; color: #FFFFFF; }
+    .profile-stat-label { font-size: 11px; color: rgba(255,255,255,0.3); margin-top: 1px; }
+    .profile-tabs { display: flex; gap: 0; margin-top: 4px; }
+    .profile-tab { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 14px 20px; color: rgba(255,255,255,0.35); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.15s; background: none; border-top: none; border-left: none; border-right: none; font-family: inherit; }
+    .profile-tab.active { color: #FFFFFF; border-bottom-color: #FFFFFF; }
+    @media (max-width: 768px) { .profile-header { padding: 32px 24px 0; } .profile-top { flex-wrap: wrap; } }
+
+    /* ── PROFILE BODY ── */
+    .profile-body { max-width: 900px; margin: 0 auto; padding: 32px 48px 80px; }
+    @media (max-width: 768px) { .profile-body { padding: 24px 24px 64px; } }
+
+    .profile-section { display: none; }
+    .profile-section.active { display: block; }
+
+    /* Posts tab */
+    .post { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; padding: 20px; margin-bottom: 12px; }
+    .post-content { font-size: 15px; line-height: 1.65; color: rgba(255,255,255,0.85); margin-bottom: 16px; word-break: break-word; }
+    .post-time { font-size: 11px; color: rgba(255,255,255,0.25); margin-bottom: 12px; }
+    .post-tag { color: rgba(255,255,255,0.45); }
+    .post-actions { display: flex; gap: 24px; }
+    .post-action { display: flex; align-items: center; gap: 6px; font-size: 13px; color: rgba(255,255,255,0.3); cursor: pointer; background: none; border: none; font-family: inherit; transition: color 0.15s; padding: 0; }
+    .post-action:hover { color: rgba(255,255,255,0.7); }
+    .post-action.liked { color: #FFFFFF; }
+    .post-action.disliked { color: rgba(255,100,100,0.8); }
+    .post-action svg { width: 15px; height: 15px; }
+
+    /* Catches/Record tab (angler only) */
+    .catch-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; }
+    .catch-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 16px; }
+    .catch-photo-placeholder { width: 100%; height: 120px; background: rgba(255,255,255,0.04); border-radius: 4px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; }
+    .catch-photo-placeholder svg { opacity: 0.2; }
+    .catch-species { font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.8); margin-bottom: 4px; }
+    .catch-meta { font-size: 11px; color: rgba(255,255,255,0.3); line-height: 1.6; }
+    .catch-weight { font-size: 18px; font-weight: 800; color: #FFFFFF; margin-bottom: 4px; }
+
+    /* Tournaments tab */
+    .tournament-row { display: flex; align-items: center; gap: 16px; padding: 16px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .tournament-row:last-child { border-bottom: none; }
+    .tournament-rank { font-size: 20px; font-weight: 900; color: rgba(255,255,255,0.2); width: 36px; text-align: center; flex-shrink: 0; }
+    .tournament-rank.top3 { color: #FFFFFF; }
+    .tournament-info { flex: 1; }
+    .tournament-name { font-size: 14px; font-weight: 700; color: rgba(255,255,255,0.85); }
+    .tournament-meta { font-size: 11px; color: rgba(255,255,255,0.3); margin-top: 3px; }
+    .tournament-weight { font-size: 14px; font-weight: 800; color: #FFFFFF; text-align: right; }
+    .tournament-weight-label { font-size: 10px; color: rgba(255,255,255,0.25); text-align: right; }
+
+    /* Club tab (director only) */
+    .club-stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 32px; }
+    .club-stat-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 20px; text-align: center; }
+    .club-stat-num { font-size: 28px; font-weight: 900; color: #FFFFFF; margin-bottom: 4px; }
+    .club-stat-label { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.3); }
+
+    /* Following tab (enthusiast) */
+    .following-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; }
+    .following-card { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 18px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 10px; }
+    .following-avatar { width: 48px; height: 48px; border-radius: 50%; background: rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 800; color: rgba(255,255,255,0.5); }
+    .following-name { font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.8); }
+    .following-role { font-size: 10px; color: rgba(255,255,255,0.3); }
+    .following-unfollow { font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.3); cursor: pointer; border: 1px solid rgba(255,255,255,0.1); border-radius: 3px; padding: 4px 10px; background: none; font-family: inherit; transition: all 0.15s; }
+    .following-unfollow:hover { border-color: rgba(255,255,255,0.3); color: rgba(255,255,255,0.6); }
+
+    footer { background: #0D0F12; border-top: 1px solid rgba(255,255,255,0.06); padding: 40px 48px 32px; }
+    .footer-bottom { max-width: 1280px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+    .footer-copy { font-size: 12px; color: rgba(255,255,255,0.2); }
+    .footer-legal { display: flex; gap: 24px; }
+    .footer-legal a { font-size: 12px; color: rgba(255,255,255,0.2); transition: color 0.15s; }
+    .footer-legal a:hover { color: rgba(255,255,255,0.5); }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-brand">
+    <img src="logo-fish.svg" alt="KULL 1" class="nav-logo-fish" />
+    <span class="nav-wordmark">KULL 1</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="anglers.html">Anglers</a></li>
+    <li><a href="directors.html">Tournament Directors</a></li>
+    <li><a href="community.html">Clubs</a></li>
+    <li><a href="feed.html">Feed</a></li>
+    <li><a href="news.html">News Room</a></li>
+  </ul>
+  <a href="signup.html" class="nav-cta">Unlock the Gate</a>
+</nav>
+
+<!-- Profile is role-aware. JS reads ?role= param and shows the appropriate sections. -->
+
+<div class="profile-header">
+  <div class="profile-header-inner">
+    <div class="profile-top">
+      <div class="profile-avatar-wrap">
+        <div class="profile-avatar" id="profileAvatarInitial">JT</div>
+        <div class="profile-verified">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l2.5 2.5L10 3" stroke="#111" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+      <div class="profile-info">
+        <div class="profile-name" id="profileName">Jake Tanner</div>
+        <div class="profile-handle" id="profileHandle">@jaketanner</div>
+        <div class="profile-role-badge" id="profileRoleBadge">Angler</div>
+      </div>
+      <div class="profile-actions">
+        <button class="profile-follow-btn" onclick="toggleFollow(this)">Follow</button>
+      </div>
+    </div>
+    <p class="profile-bio" id="profileBio">Competitive kayak angler out of southwest Georgia. 7 seasons. Largemouth specialist. Lake Seminole is home water.</p>
+    <div class="profile-stats">
+      <div class="profile-stat" id="stat1"><div class="profile-stat-num" id="stat1Num">214</div><div class="profile-stat-label" id="stat1Label">Verified Catches</div></div>
+      <div class="profile-stat" id="stat2"><div class="profile-stat-num" id="stat2Num">18</div><div class="profile-stat-label" id="stat2Label">Tournaments</div></div>
+      <div class="profile-stat" id="stat3"><div class="profile-stat-num" id="stat3Num">342</div><div class="profile-stat-label" id="stat3Label">Followers</div></div>
+      <div class="profile-stat" id="stat4"><div class="profile-stat-num" id="stat4Num">89</div><div class="profile-stat-label" id="stat4Label">Following</div></div>
+    </div>
+    <div class="profile-tabs" id="profileTabs">
+      <!-- Populated by JS based on role -->
+    </div>
+  </div>
+</div>
+
+<div class="profile-body">
+
+  <!-- POSTS (all roles) -->
+  <div class="profile-section active" id="section-posts">
+    <div class="post">
+      <div class="post-time">2h ago</div>
+      <p class="post-content">Just submitted my fifth fish. 4.2 lbs largemouth on a swim jig off the north bank. GPS locked, timestamp clean. Sitting at 3rd on the leaderboard with two hours left. <span class="post-tag">#KULL1</span> <span class="post-tag">#LakeSeminole</span></p>
+      <div class="post-actions">
+        <button class="post-action" onclick="reactPost(this,'like')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z"/><path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
+          <span>48</span>
+        </button>
+        <button class="post-action" onclick="reactPost(this,'dislike')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3H10z"/><path d="M17 2h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"/></svg>
+          <span>2</span>
+        </button>
+      </div>
+    </div>
+    <div class="post">
+      <div class="post-time">9h ago</div>
+      <p class="post-content">Morning bite was slow. Switched from a buzzbait to finesse drop shot at 18ft — picked up a 3.7 in 40 minutes. Wind died at 8:30 and everything went quiet. <span class="post-tag">#Finesse</span></p>
+      <div class="post-actions">
+        <button class="post-action" onclick="reactPost(this,'like')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z"/><path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
+          <span>62</span>
+        </button>
+        <button class="post-action" onclick="reactPost(this,'dislike')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3H10z"/><path d="M17 2h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"/></svg>
+          <span>0</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CATCHES (angler only) -->
+  <div class="profile-section" id="section-catches">
+    <div class="catch-grid">
+      <div class="catch-card">
+        <div class="catch-photo-placeholder">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+        </div>
+        <div class="catch-weight">4.2 lbs</div>
+        <div class="catch-species">Largemouth Bass</div>
+        <div class="catch-meta">18.4 in &nbsp;·&nbsp; Apr 27, 2026<br>Lake Seminole Spring Open</div>
+      </div>
+      <div class="catch-card">
+        <div class="catch-photo-placeholder">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+        </div>
+        <div class="catch-weight">3.7 lbs</div>
+        <div class="catch-species">Largemouth Bass</div>
+        <div class="catch-meta">16.8 in &nbsp;·&nbsp; Apr 27, 2026<br>Lake Seminole Spring Open</div>
+      </div>
+      <div class="catch-card">
+        <div class="catch-photo-placeholder">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+        </div>
+        <div class="catch-weight">2.9 lbs</div>
+        <div class="catch-species">Largemouth Bass</div>
+        <div class="catch-meta">15.2 in &nbsp;·&nbsp; Mar 12, 2026<br>Okefenokee Winter Circuit</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOURNAMENTS (angler only) -->
+  <div class="profile-section" id="section-tournaments">
+    <div class="tournament-row">
+      <div class="tournament-rank top3">1</div>
+      <div class="tournament-info">
+        <div class="tournament-name">Okefenokee Winter Circuit</div>
+        <div class="tournament-meta">Five-Fish &nbsp;·&nbsp; Mar 12, 2026 &nbsp;·&nbsp; 88 anglers</div>
+      </div>
+      <div>
+        <div class="tournament-weight">19.3 lbs</div>
+        <div class="tournament-weight-label">Total Weight</div>
+      </div>
+    </div>
+    <div class="tournament-row">
+      <div class="tournament-rank top3">3</div>
+      <div class="tournament-info">
+        <div class="tournament-name">Lake Seminole Spring Open</div>
+        <div class="tournament-meta">Five-Fish &nbsp;·&nbsp; Apr 27, 2026 &nbsp;·&nbsp; 214 anglers</div>
+      </div>
+      <div>
+        <div class="tournament-weight">14.8 lbs</div>
+        <div class="tournament-weight-label">Current Standing</div>
+      </div>
+    </div>
+    <div class="tournament-row">
+      <div class="tournament-rank">7</div>
+      <div class="tournament-info">
+        <div class="tournament-name">Flint River Fall Classic</div>
+        <div class="tournament-meta">Big Bass &nbsp;·&nbsp; Nov 5, 2025 &nbsp;·&nbsp; 62 anglers</div>
+      </div>
+      <div>
+        <div class="tournament-weight">5.1 lbs</div>
+        <div class="tournament-weight-label">Big Bass</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CLUB (director only) -->
+  <div class="profile-section" id="section-club">
+    <div class="club-stat-grid">
+      <div class="club-stat-card"><div class="club-stat-num">12</div><div class="club-stat-label">Tournaments Run</div></div>
+      <div class="club-stat-card"><div class="club-stat-num">847</div><div class="club-stat-label">Total Anglers</div></div>
+      <div class="club-stat-card"><div class="club-stat-num">$0</div><div class="club-stat-label">Disputed Results</div></div>
+    </div>
+    <div class="tournament-row">
+      <div class="tournament-rank top3" style="font-size:13px;">LIVE</div>
+      <div class="tournament-info">
+        <div class="tournament-name">Lake Seminole Spring Open</div>
+        <div class="tournament-meta">Five-Fish &nbsp;·&nbsp; 214 anglers &nbsp;·&nbsp; 6h remaining</div>
+      </div>
+    </div>
+    <div class="tournament-row">
+      <div class="tournament-rank" style="font-size:11px;color:rgba(255,255,255,0.2);">DONE</div>
+      <div class="tournament-info">
+        <div class="tournament-name">Okefenokee Winter Circuit</div>
+        <div class="tournament-meta">Five-Fish &nbsp;·&nbsp; 88 anglers &nbsp;·&nbsp; Mar 12, 2026</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOLLOWING (enthusiast only) -->
+  <div class="profile-section" id="section-following">
+    <div class="following-grid">
+      <div class="following-card">
+        <div class="following-avatar">JT</div>
+        <div class="following-name">Jake Tanner</div>
+        <div class="following-role">Angler</div>
+        <button class="following-unfollow">Following</button>
+      </div>
+      <div class="following-card">
+        <div class="following-avatar">MC</div>
+        <div class="following-name">Marcus Cole</div>
+        <div class="following-role">Director</div>
+        <button class="following-unfollow">Following</button>
+      </div>
+      <div class="following-card">
+        <div class="following-avatar">DW</div>
+        <div class="following-name">DeShawn Williams</div>
+        <div class="following-role">Angler</div>
+        <button class="following-unfollow">Following</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <div class="footer-bottom">
+    <p class="footer-copy">&copy; 2026 KULL 1. All rights reserved.</p>
+    <div class="footer-legal">
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="terms.html">Terms of Service</a>
+      <a href="cookies.html">Cookie Policy</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Role-aware tab configuration
+  var ROLE_TABS = {
+    angler:     [['posts','Posts'],['catches','Catches'],['tournaments','Tournaments']],
+    director:   [['posts','Posts'],['club','Club']],
+    enthusiast: [['posts','Posts'],['following','Following']],
+  };
+
+  function getRole() {
+    var params = new URLSearchParams(window.location.search);
+    return params.get('role') || 'angler';
+  }
+
+  function initProfile() {
+    var role = getRole();
+    var tabs = ROLE_TABS[role] || ROLE_TABS['angler'];
+    var tabContainer = document.getElementById('profileTabs');
+    tabContainer.innerHTML = '';
+    tabs.forEach(function(tab, i) {
+      var btn = document.createElement('button');
+      btn.className = 'profile-tab' + (i === 0 ? ' active' : '');
+      btn.textContent = tab[1];
+      btn.dataset.section = tab[0];
+      btn.onclick = function() { switchSection(tab[0]); };
+      tabContainer.appendChild(btn);
+    });
+
+    // Hide all sections, show first
+    document.querySelectorAll('.profile-section').forEach(function(s) { s.classList.remove('active'); });
+    if (tabs[0]) document.getElementById('section-' + tabs[0][0]).classList.add('active');
+
+    // Update role badge
+    document.getElementById('profileRoleBadge').textContent = role.charAt(0).toUpperCase() + role.slice(1);
+
+    // Adjust stats for role
+    if (role === 'director') {
+      document.getElementById('stat1Num').textContent = '12';
+      document.getElementById('stat1Label').textContent = 'Tournaments Run';
+      document.getElementById('stat2Num').textContent = '847';
+      document.getElementById('stat2Label').textContent = 'Total Anglers';
+      document.getElementById('profileAvatarInitial').textContent = 'MC';
+      document.getElementById('profileName').textContent = 'Marcus Cole';
+      document.getElementById('profileHandle').textContent = '@marcuscole_td';
+      document.getElementById('profileBio').textContent = 'Tournament Director — Okefenokee Bass Circuit. Running GPS-verified tournaments since 2026. Free forever for directors.';
+    } else if (role === 'enthusiast') {
+      document.getElementById('stat1Num').textContent = '3';
+      document.getElementById('stat1Label').textContent = 'Following';
+      document.getElementById('stat2Num').textContent = '142';
+      document.getElementById('stat2Label').textContent = 'Tournaments Watched';
+      document.getElementById('profileAvatarInitial').textContent = 'SR';
+      document.getElementById('profileName').textContent = 'Sarah Reyes';
+      document.getElementById('profileHandle').textContent = '@sarah_reyes_kayak';
+      document.getElementById('profileBio').textContent = 'Kayak fishing enthusiast. Following the sport closely. Tournament spectator and content creator.';
+    }
+  }
+
+  function switchSection(section) {
+    document.querySelectorAll('.profile-section').forEach(function(s) { s.classList.remove('active'); });
+    document.querySelectorAll('.profile-tab').forEach(function(t) { t.classList.remove('active'); });
+    var el = document.getElementById('section-' + section);
+    if (el) el.classList.add('active');
+    document.querySelectorAll('.profile-tab').forEach(function(t) {
+      if (t.dataset.section === section) t.classList.add('active');
+    });
+  }
+
+  function toggleFollow(btn) {
+    if (btn.classList.contains('following')) {
+      btn.classList.remove('following');
+      btn.textContent = 'Follow';
+    } else {
+      btn.classList.add('following');
+      btn.textContent = 'Following';
+    }
+  }
+
+  function reactPost(btn, type) {
+    var actions = btn.closest('.post-actions');
+    var likeBtn = actions.querySelector('.post-action:nth-child(1)');
+    var dislikeBtn = actions.querySelector('.post-action:nth-child(2)');
+    var count = btn.querySelector('span');
+    var isActive = btn.classList.contains(type === 'like' ? 'liked' : 'disliked');
+    likeBtn.classList.remove('liked');
+    dislikeBtn.classList.remove('disliked');
+    if (!isActive) {
+      btn.classList.add(type === 'like' ? 'liked' : 'disliked');
+      count.textContent = parseInt(count.textContent) + 1;
+    } else {
+      count.textContent = Math.max(0, parseInt(count.textContent) - 1);
+    }
+  }
+
+  initProfile();
+</script>
+
+<script src="cookie-banner.js"></script>
+</body>
+</html>
