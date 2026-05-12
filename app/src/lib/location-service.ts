@@ -2,15 +2,14 @@ import * as Location from 'expo-location';
 import * as TaskManager from 'expo-task-manager';
 
 const BACKGROUND_LOCATION_TASK = 'kull1-background-location';
-const GEOFENCE_TASK = 'kull1-geofence';
 
-// Store for current tournament boundary
-let activeBoundary: { lat: number; lng: number }[] | null = null;
+// Store for current tournament boundary (polygon, not circle)
+let activeBoundary: [number, number][] | null = null; // [lng, lat] GeoJSON order
 let onBoundaryExit: (() => void) | null = null;
+let wasInsideBoundary = true;
 
 /**
  * Request all location permissions (foreground + background).
- * Must be called before starting background tracking.
  */
 export async function requestLocationPermissions(): Promise<boolean> {
   const { status: foreground } = await Location.requestForegroundPermissionsAsync();
@@ -21,19 +20,45 @@ export async function requestLocationPermissions(): Promise<boolean> {
 }
 
 /**
- * Start background GPS tracking during an active tournament.
- * Records position every 30 seconds for tournament verification.
+ * Point-in-polygon using ray casting. Same algorithm as server.
+ * Polygon coords in GeoJSON order: [lng, lat]
  */
-export async function startBackgroundTracking() {
+function pointInPolygon(lat: number, lng: number, polygon: [number, number][]): boolean {
+  let inside = false;
+  for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+    const [xi, yi] = polygon[i]; // [lng, lat]
+    const [xj, yj] = polygon[j];
+    const intersect = ((yi > lat) !== (yj > lat))
+      && (lng < (xj - xi) * (lat - yi) / (yj - yi) + xi);
+    if (intersect) inside = !inside;
+  }
+  return inside;
+}
+
+/**
+ * Start background GPS tracking during an active tournament.
+ * Checks position against polygon boundary on every update.
+ * expo-location geofencing only supports circles — we do our own polygon check.
+ */
+export async function startBackgroundTracking(
+  boundary?: [number, number][],
+  onExit?: () => void
+) {
   const hasPermission = await requestLocationPermissions();
   if (!hasPermission) {
     throw new Error('Background location permission required');
   }
 
+  if (boundary) {
+    activeBoundary = boundary;
+    onBoundaryExit = onExit || null;
+    wasInsideBoundary = true;
+  }
+
   await Location.startLocationUpdatesAsync(BACKGROUND_LOCATION_TASK, {
     accuracy: Location.Accuracy.High,
-    timeInterval: 30000, // every 30 seconds
-    distanceInterval: 10, // or every 10 meters
+    timeInterval: 30000,
+    distanceInterval: 10,
     foregroundService: {
       notificationTitle: 'KULL 1 — Tournament Active',
       notificationBody: 'GPS tracking is running for tournament verification.',
@@ -52,49 +77,6 @@ export async function stopBackgroundTracking() {
   if (isRunning) {
     await Location.stopLocationUpdatesAsync(BACKGROUND_LOCATION_TASK);
   }
-}
-
-/**
- * Start geofence monitoring for a tournament boundary.
- * Uses a simplified approach: monitors a circular region around the boundary center,
- * then does precise polygon check in the background task.
- */
-export async function startGeofenceMonitoring(
-  boundary: { lat: number; lng: number }[],
-  onExit: () => void
-) {
-  activeBoundary = boundary;
-  onBoundaryExit = onExit;
-
-  // Calculate bounding circle
-  const centerLat = boundary.reduce((sum, p) => sum + p.lat, 0) / boundary.length;
-  const centerLng = boundary.reduce((sum, p) => sum + p.lng, 0) / boundary.length;
-
-  // Find max distance from center to any boundary point (rough radius)
-  let maxDist = 0;
-  for (const p of boundary) {
-    const dist = haversineDistance(centerLat, centerLng, p.lat, p.lng);
-    maxDist = Math.max(maxDist, dist);
-  }
-
-  // Add 500m buffer to boundary radius
-  const radius = maxDist + 500;
-
-  await Location.startGeofencingAsync(GEOFENCE_TASK, [{
-    identifier: 'tournament-boundary',
-    latitude: centerLat,
-    longitude: centerLng,
-    radius,
-    notifyOnEnter: true,
-    notifyOnExit: true,
-  }]);
-}
-
-export async function stopGeofenceMonitoring() {
-  const isRunning = await Location.hasStartedGeofencingAsync(GEOFENCE_TASK);
-  if (isRunning) {
-    await Location.stopGeofencingAsync(GEOFENCE_TASK);
-  }
   activeBoundary = null;
   onBoundaryExit = null;
 }
@@ -107,54 +89,45 @@ export async function getCurrentPosition(): Promise<Location.LocationObject> {
   if (status !== 'granted') {
     throw new Error('Location permission required');
   }
-
   return Location.getCurrentPositionAsync({
     accuracy: Location.Accuracy.BestForNavigation,
   });
 }
 
-// Haversine distance in meters
-function haversineDistance(lat1: number, lng1: number, lat2: number, lng2: number): number {
-  const R = 6371000; // Earth radius in meters
-  const dLat = (lat2 - lat1) * Math.PI / 180;
-  const dLng = (lng2 - lng1) * Math.PI / 180;
-  const a = Math.sin(dLat / 2) ** 2 +
-    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-    Math.sin(dLng / 2) ** 2;
-  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+/**
+ * Check if a point is inside the active boundary.
+ */
+export function isInsideBoundary(lat: number, lng: number): boolean {
+  if (!activeBoundary) return true; // No boundary = always valid
+  return pointInPolygon(lat, lng, activeBoundary);
 }
 
-// ── Background Task Definitions ──
-// These must be defined at the top level, outside of any component.
+// ── Background Task Definition ──
+// Runs polygon boundary check on every location update.
 
-TaskManager.defineTask(BACKGROUND_LOCATION_TASK, ({ data, error }) => {
+TaskManager.defineTask(BACKGROUND_LOCATION_TASK, async ({ data, error }) => {
   if (error) {
     console.error('Background location error:', error);
     return;
   }
   if (data) {
     const { locations } = data as { locations: Location.LocationObject[] };
-    // TODO: Store location trail for tournament verification
-    // Could write to FileSystem or send to API
-    console.log('Background location update:', locations.length, 'points');
-  }
-});
 
-TaskManager.defineTask(GEOFENCE_TASK, ({ data, error }) => {
-  if (error) {
-    console.error('Geofence error:', error);
-    return;
-  }
-  if (data) {
-    const { eventType, region } = data as {
-      eventType: Location.GeofencingEventType;
-      region: Location.LocationRegion;
-    };
+    // Check each location against boundary polygon
+    if (activeBoundary && locations.length > 0) {
+      const latest = locations[locations.length - 1];
+      const inside = pointInPolygon(
+        latest.coords.latitude,
+        latest.coords.longitude,
+        activeBoundary
+      );
 
-    if (eventType === Location.GeofencingEventType.Exit) {
-      console.log('GEOFENCE EXIT detected');
-      // Trigger notification or callback
-      if (onBoundaryExit) onBoundaryExit();
+      if (wasInsideBoundary && !inside) {
+        // Just exited boundary
+        console.log('BOUNDARY EXIT detected at', latest.coords.latitude, latest.coords.longitude);
+        if (onBoundaryExit) onBoundaryExit();
+      }
+      wasInsideBoundary = inside;
     }
   }
 });

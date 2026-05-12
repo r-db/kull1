@@ -1,7 +1,7 @@
 import * as FileSystem from 'expo-file-system';
 import { api } from './api';
 
-const QUEUE_DIR = `${FileSystem.documentDirectory}catch-queue/`;
+const QUEUE_DIR = `${FileSystem.Paths.document}/catch-queue/`;
 const QUEUE_INDEX = `${QUEUE_DIR}index.json`;
 
 export interface QueuedCatch {

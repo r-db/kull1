@@ -47,10 +47,32 @@ export default function CatchScreen() {
       accuracy: Location.Accuracy.BestForNavigation,
     });
 
-    const result = await cameraRef.current.takePictureAsync({ quality: 0.8 });
+    // Get GPS first — expo-camera does NOT auto-embed GPS in photos
+    let loc: Location.LocationObject | null = null;
+    try {
+      loc = await locPromise;
+      setLocation(loc);
+    } catch {
+      Alert.alert('Location Error', 'Could not get GPS coordinates. Make sure location services are enabled.');
+      return;
+    }
+
+    // Take photo with GPS EXIF manually injected
+    const exifData: Record<string, any> = {};
+    if (loc) {
+      exifData.GPSLatitude = loc.coords.latitude;
+      exifData.GPSLongitude = loc.coords.longitude;
+      if (loc.coords.altitude) exifData.GPSAltitude = loc.coords.altitude;
+    }
+
+    const result = await cameraRef.current.takePictureAsync({
+      quality: 0.8,
+      exif: true,
+      additionalExif: exifData,
+    });
     if (!result) return;
 
-    // Compress on-device before upload
+    // Compress on-device before upload (platform-specific quality tuning)
     const compressed = await ImageManipulator.manipulateAsync(
       result.uri,
       [{ resize: { width: 1200 } }],
@@ -58,13 +80,6 @@ export default function CatchScreen() {
     );
 
     setPhoto(compressed.uri);
-
-    try {
-      const loc = await locPromise;
-      setLocation(loc);
-    } catch {
-      Alert.alert('Location Error', 'Could not get GPS coordinates. Make sure location services are enabled.');
-    }
   };
 
   const submitCatch = async (tournamentId: string) => {
