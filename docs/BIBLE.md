@@ -17,37 +17,47 @@ The moat: GPS verification eliminates self-reporting fraud. Every catch is times
 
 ---
 
-## 2. Architecture
+## 2. Architecture (UPDATED 2026-05-12)
+
+**KEY DECISION: Yakabass backend is the unified API. kull1-api (Node.js) is superseded.**
 
 ```
-kull1.com (Vercel)          KULL 1 App (Expo/React Native)
-     │                              │
-     └──────────┬───────────────────┘
-                │
-         api.kull1.com (Railway)
-         Node.js + Express 5 + TypeScript
-                │
-         Neon PostgreSQL (kull1 database)
-                │
-         ┌──────┴──────┐
-     Stripe Connect    AWS S3
-     (payments)     (catch photos)
+kull1.com (Vercel)                    KULL 1 App (Expo)
+  Static marketing site                  Native iOS/Android
+     │                                        │
+     │    yakabass.kull1.com (Vercel)          │
+     │    Club template (Next.js 16)          │
+     │         │                              │
+     └─────────┴──────────┬───────────────────┘
+                          │
+              yakabass-api-production.up.railway.app
+              FastAPI + Python (UNIFIED BACKEND)
+                          │
+              ┌───────────┼───────────┐
+         Neon PostgreSQL  Cloudflare R2  Clerk Auth
+         (yakabass DB)    (photos)       (JWT RS256)
+              │                │
+         ┌────┴────┐    Stripe Connect
+      30+ tables    (tournament payouts)
+      Multi-tenant RLS
 ```
 
 ### Repos
 | Repo | Location | Deploys To |
 |------|----------|------------|
-| kull1 (website + app) | github.com/r-db/kull1 | Vercel (website), EAS Build (app) |
-| kull1-api | github.com/r-db/kull1-api | Railway |
+| kull1 (marketing + app) | github.com/r-db/kull1 | Vercel (marketing), EAS Build (app) |
+| yakabass (club template + API) | github.com/r-db/yakabass | Vercel (frontend), Railway (backend) |
+| ~~kull1-api~~ | ~~github.com/r-db/kull1-api~~ | ~~SUPERSEDED — use yakabass backend~~ |
 
 ### Tech Stack
 | Layer | Technology |
 |-------|-----------|
-| Website | Static HTML/CSS/JS |
+| Platform Marketing | Static HTML/CSS/JS (kull1.com) |
+| Club Template | Next.js 16, React 19, Tailwind v4, Framer Motion (*.kull1.com) |
 | Mobile App | Expo SDK 54, React Native 0.81, TypeScript |
-| API | Express 5, TypeScript, Drizzle ORM |
-| Database | Neon PostgreSQL (separate `kull1` database) |
-| Auth | JWT (access + refresh tokens), bcryptjs |
+| API | FastAPI + Uvicorn (Python) — 30+ route modules |
+| Database | Neon PostgreSQL (multi-tenant with RLS, 30+ tables) |
+| Auth | Clerk (JWT RS256, 4-tier RBAC) |
 | Payments | Stripe Connect Express ($5 platform fee per event) |
 | Photos | AWS S3 (presigned URLs) |
 | Hosting | Vercel (web), Railway (API), EAS Build (app) |
