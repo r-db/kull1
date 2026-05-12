@@ -1,6 +1,7 @@
 import * as SecureStore from 'expo-secure-store';
 
-const API_URL = __DEV__ ? 'http://localhost:5555' : 'https://api.kull1.com';
+// Unified API — yakabass FastAPI backend serves all clubs
+const API_URL = __DEV__ ? 'http://localhost:8000' : 'https://yakabass-api-production.up.railway.app';
 
 let accessToken: string | null = null;
 let refreshToken: string | null = null;
@@ -100,9 +101,10 @@ export const tournamentApi = {
   leaderboard: (id: string) => api(`/api/tournaments/${id}/leaderboard`),
 };
 
-// Catch API
+// Catch API — GPS-verified submissions
 export const catchApi = {
-  submit: (formData: FormData) => api('/api/catches', { method: 'POST', body: formData }),
+  submit: (formData: FormData) => api('/api/catches/submit', { method: 'POST', body: formData }),
+  forTournament: (tournamentId: string) => api(`/api/catches/tournament/${tournamentId}`),
 };
 
 // Angler API
