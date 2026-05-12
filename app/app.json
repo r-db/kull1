@@ -1,0 +1,58 @@
+{
+  "expo": {
+    "name": "KULL 1",
+    "slug": "kull1",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "kull1",
+    "userInterfaceStyle": "dark",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#111111"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.kull1.app",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "KULL 1 needs your location to verify catch submissions during tournaments.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "KULL 1 needs background location to track your position during active tournaments.",
+        "NSCameraUsageDescription": "KULL 1 needs camera access to photograph your catch.",
+        "UIBackgroundModes": ["location", "fetch", "remote-notification"]
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#111111"
+      },
+      "package": "com.kull1.app",
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_BACKGROUND_LOCATION",
+        "CAMERA"
+      ]
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "KULL 1 needs background location during active tournaments.",
+          "isIosBackgroundLocationEnabled": true,
+          "isAndroidBackgroundLocationEnabled": true
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "KULL 1 needs camera access to photograph catches."
+        }
+      ]
+    ]
+  }
+}
