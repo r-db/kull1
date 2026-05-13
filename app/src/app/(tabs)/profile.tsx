@@ -1,10 +1,44 @@
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, RefreshControl } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../../lib/auth';
+import { getPendingCount, syncQueue } from '../../lib/offline-queue';
 
 export default function ProfileScreen() {
   const { user, logout } = useAuth();
   const router = useRouter();
+  const [pendingCatches, setPendingCatches] = useState(0);
+  const [syncing, setSyncing] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+
+  useEffect(() => {
+    if (user) loadPendingCount();
+  }, [user]);
+
+  const loadPendingCount = async () => {
+    try {
+      const count = await getPendingCount();
+      setPendingCatches(count);
+    } catch {}
+  };
+
+  const handleSync = async () => {
+    setSyncing(true);
+    try {
+      const result = await syncQueue();
+      await loadPendingCount();
+      if (result.synced > 0) {
+        // Could show alert but keeping it clean
+      }
+    } catch {}
+    setSyncing(false);
+  };
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await loadPendingCount();
+    setRefreshing(false);
+  };
 
   if (!user) {
     return (
@@ -22,7 +56,10 @@ export default function ProfileScreen() {
   }
 
   return (
-    <View style={styles.container}>
+    <ScrollView
+      style={styles.container}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#4ADE80" />}
+    >
       <View style={styles.header}>
         <View style={styles.avatar}>
           <Text style={styles.avatarText}>{user.email[0].toUpperCase()}</Text>
@@ -31,25 +68,25 @@ export default function ProfileScreen() {
         <Text style={styles.role}>{user.role.toUpperCase()}</Text>
       </View>
 
-      <View style={styles.statsRow}>
-        <View style={styles.stat}>
-          <Text style={styles.statValue}>0</Text>
-          <Text style={styles.statLabel}>TOURNAMENTS</Text>
+      {pendingCatches > 0 && (
+        <View style={styles.pendingBar}>
+          <Text style={styles.pendingText}>
+            {pendingCatches} catch{pendingCatches > 1 ? 'es' : ''} waiting to sync
+          </Text>
+          <TouchableOpacity
+            style={[styles.syncButton, syncing && styles.disabled]}
+            onPress={handleSync}
+            disabled={syncing}
+          >
+            <Text style={styles.syncText}>{syncing ? 'SYNCING...' : 'SYNC NOW'}</Text>
+          </TouchableOpacity>
         </View>
-        <View style={styles.stat}>
-          <Text style={styles.statValue}>0</Text>
-          <Text style={styles.statLabel}>CATCHES</Text>
-        </View>
-        <View style={styles.stat}>
-          <Text style={styles.statValue}>0</Text>
-          <Text style={styles.statLabel}>WINS</Text>
-        </View>
-      </View>
+      )}
 
       <TouchableOpacity style={styles.logoutButton} onPress={logout}>
         <Text style={styles.logoutText}>SIGN OUT</Text>
       </TouchableOpacity>
-    </View>
+    </ScrollView>
   );
 }
 
@@ -67,10 +104,11 @@ const styles = StyleSheet.create({
   avatarText: { fontSize: 28, fontWeight: '800', color: '#4ADE80' },
   email: { fontSize: 16, fontWeight: '600', color: '#fff' },
   role: { fontSize: 11, fontWeight: '700', color: '#4ADE80', letterSpacing: 1.5, marginTop: 4 },
-  statsRow: { flexDirection: 'row', justifyContent: 'space-around', marginBottom: 40, paddingVertical: 24, borderTopWidth: 1, borderBottomWidth: 1, borderColor: 'rgba(255,255,255,0.06)' },
-  stat: { alignItems: 'center' },
-  statValue: { fontSize: 24, fontWeight: '900', color: '#fff' },
-  statLabel: { fontSize: 10, fontWeight: '700', color: 'rgba(255,255,255,0.35)', letterSpacing: 1, marginTop: 4 },
-  logoutButton: { padding: 16, borderRadius: 8, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)', alignItems: 'center' },
+  pendingBar: { backgroundColor: 'rgba(245,158,11,0.1)', borderWidth: 1, borderColor: 'rgba(245,158,11,0.3)', borderRadius: 12, padding: 16, marginBottom: 24, alignItems: 'center', gap: 10 },
+  pendingText: { color: '#F59E0B', fontSize: 13, fontWeight: '700' },
+  syncButton: { backgroundColor: '#F59E0B', paddingHorizontal: 20, paddingVertical: 10, borderRadius: 6 },
+  syncText: { color: '#111', fontSize: 11, fontWeight: '800', letterSpacing: 0.5 },
+  disabled: { opacity: 0.5 },
+  logoutButton: { padding: 16, borderRadius: 8, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)', alignItems: 'center', marginTop: 16 },
   logoutText: { fontSize: 12, fontWeight: '700', color: 'rgba(255,255,255,0.4)', letterSpacing: 1 },
 });

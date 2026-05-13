@@ -77,11 +77,11 @@ export async function syncQueue(): Promise<{ synced: number; failed: number }> {
 
     try {
       const formData = new FormData();
-      formData.append('tournamentId', item.tournamentId);
+      formData.append('tournament_id', item.tournamentId);
       formData.append('lat', item.lat.toString());
       formData.append('lng', item.lng.toString());
-      if (item.lengthIn) formData.append('lengthIn', item.lengthIn);
-      if (item.weightOz) formData.append('weightOz', item.weightOz);
+      if (item.lengthIn) formData.append('length_in', item.lengthIn);
+      if (item.weightOz) formData.append('weight_oz', item.weightOz);
       if (item.species) formData.append('species', item.species);
 
       // Attach photo
@@ -91,7 +91,7 @@ export async function syncQueue(): Promise<{ synced: number; failed: number }> {
         name: `${item.id}.jpg`,
       } as any);
 
-      await api('/api/catches', { method: 'POST', body: formData });
+      await api('/api/catches/submit', { method: 'POST', body: formData });
 
       item.synced = true;
       synced++;
