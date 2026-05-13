@@ -21,7 +21,11 @@
         "NSLocationWhenInUseUsageDescription": "KULL 1 needs your location to verify catch submissions during tournaments.",
         "NSLocationAlwaysAndWhenInUseUsageDescription": "KULL 1 needs background location to track your position during active tournaments.",
         "NSCameraUsageDescription": "KULL 1 needs camera access to photograph your catch.",
-        "UIBackgroundModes": ["location", "fetch", "remote-notification"]
+        "UIBackgroundModes": [
+          "location",
+          "fetch",
+          "remote-notification"
+        ]
       }
     },
     "android": {
@@ -34,7 +38,14 @@
         "ACCESS_FINE_LOCATION",
         "ACCESS_COARSE_LOCATION",
         "ACCESS_BACKGROUND_LOCATION",
-        "CAMERA"
+        "CAMERA",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_BACKGROUND_LOCATION",
+        "android.permission.FOREGROUND_SERVICE",
+        "android.permission.FOREGROUND_SERVICE_LOCATION",
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
       ]
     },
     "plugins": [
@@ -54,6 +65,12 @@
           "cameraPermission": "KULL 1 needs camera access to photograph catches."
         }
       ]
-    ]
+    ],
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "c994fdda-fba2-41b2-af4f-0fbfb4fb4b7e"
+      }
+    }
   }
 }
