@@ -459,6 +459,14 @@
       });
     }
     window.handleEntity = handleEntity;
+
+    // Wire form submissions to Clerk sign-up on the web app
+    document.querySelectorAll('form').forEach(function(form) {
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        window.location.href = 'https://yakabass.kull1.com/sign-up';
+      });
+    });
   })();
 </script>
 
