@@ -1,42 +1,84 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useAuth } from '../lib/auth';
+import { useSignUp } from '@clerk/clerk-expo';
 
 export default function RegisterScreen() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
-  const [homeWaters, setHomeWaters] = useState('');
+  const [verificationCode, setVerificationCode] = useState('');
+  const [pendingVerification, setPendingVerification] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { register } = useAuth();
+  const { signUp, setActive, isLoaded } = useSignUp();
   const router = useRouter();
 
-  const handleRegister = async () => {
+  const handleRegister = useCallback(async () => {
+    if (!isLoaded || !signUp) return;
     if (!email || !password || !firstName || !lastName) {
       Alert.alert('Error', 'Name, email, and password are required');
       return;
     }
     setLoading(true);
     try {
-      await register({
-        email: email.trim(),
+      await signUp.create({
+        emailAddress: email.trim(),
         password,
-        phone: phone.trim() || undefined,
         firstName: firstName.trim(),
         lastName: lastName.trim(),
-        homeWaters: homeWaters.trim() || undefined,
-        role: 'angler',
       });
-      router.back();
+      await signUp.prepareEmailAddressVerification({ strategy: 'email_code' });
+      setPendingVerification(true);
     } catch (err: any) {
-      Alert.alert('Registration Failed', err.message);
+      const msg = err?.errors?.[0]?.longMessage || err?.message || 'Registration failed';
+      Alert.alert('Registration Failed', msg);
     } finally {
       setLoading(false);
     }
-  };
+  }, [isLoaded, signUp, email, password, firstName, lastName]);
+
+  const handleVerify = useCallback(async () => {
+    if (!isLoaded || !signUp) return;
+    setLoading(true);
+    try {
+      const result = await signUp.attemptEmailAddressVerification({ code: verificationCode });
+      if (result.status === 'complete' && result.createdSessionId) {
+        await setActive({ session: result.createdSessionId });
+        router.back();
+      }
+    } catch (err: any) {
+      const msg = err?.errors?.[0]?.longMessage || err?.message || 'Verification failed';
+      Alert.alert('Verification Failed', msg);
+    } finally {
+      setLoading(false);
+    }
+  }, [isLoaded, signUp, verificationCode]);
+
+  if (pendingVerification) {
+    return (
+      <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+        <View style={styles.scroll}>
+          <Text style={styles.title}>CHECK YOUR EMAIL</Text>
+          <Text style={styles.subtitle}>Enter the verification code sent to {email}</Text>
+
+          <TextInput
+            style={styles.input}
+            placeholder="Verification Code"
+            placeholderTextColor="rgba(255,255,255,0.3)"
+            value={verificationCode}
+            onChangeText={setVerificationCode}
+            keyboardType="number-pad"
+            autoComplete="one-time-code"
+          />
+
+          <TouchableOpacity style={[styles.button, loading && styles.disabled]} onPress={handleVerify} disabled={loading}>
+            <Text style={styles.buttonText}>{loading ? 'VERIFYING...' : 'VERIFY EMAIL'}</Text>
+          </TouchableOpacity>
+        </View>
+      </KeyboardAvoidingView>
+    );
+  }
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
@@ -50,9 +92,7 @@ export default function RegisterScreen() {
         </View>
 
         <TextInput style={styles.input} placeholder="Email" placeholderTextColor="rgba(255,255,255,0.3)" value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address" autoComplete="email" />
-        <TextInput style={styles.input} placeholder="Phone (optional)" placeholderTextColor="rgba(255,255,255,0.3)" value={phone} onChangeText={setPhone} keyboardType="phone-pad" autoComplete="tel" />
         <TextInput style={styles.input} placeholder="Password" placeholderTextColor="rgba(255,255,255,0.3)" value={password} onChangeText={setPassword} secureTextEntry autoComplete="new-password" />
-        <TextInput style={styles.input} placeholder="Home Waters (e.g. Lake Seminole, GA)" placeholderTextColor="rgba(255,255,255,0.3)" value={homeWaters} onChangeText={setHomeWaters} />
 
         <TouchableOpacity style={[styles.button, loading && styles.disabled]} onPress={handleRegister} disabled={loading}>
           <Text style={styles.buttonText}>{loading ? 'CREATING...' : 'CREATE ACCOUNT'}</Text>

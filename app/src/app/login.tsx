@@ -1,30 +1,37 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, KeyboardAvoidingView, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useAuth } from '../lib/auth';
+import { useSignIn } from '@clerk/clerk-expo';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const { signIn, setActive, isLoaded } = useSignIn();
   const router = useRouter();
 
-  const handleLogin = async () => {
+  const handleLogin = useCallback(async () => {
+    if (!isLoaded || !signIn) return;
     if (!email || !password) {
       Alert.alert('Error', 'Email and password are required');
       return;
     }
     setLoading(true);
     try {
-      await login(email.trim(), password);
-      router.back();
+      const result = await signIn.create({ identifier: email.trim(), password });
+      if (result.status === 'complete' && result.createdSessionId) {
+        await setActive({ session: result.createdSessionId });
+        router.back();
+      } else {
+        Alert.alert('Sign In', 'Additional verification required. Please check your email.');
+      }
     } catch (err: any) {
-      Alert.alert('Login Failed', err.message);
+      const msg = err?.errors?.[0]?.longMessage || err?.message || 'Sign in failed';
+      Alert.alert('Login Failed', msg);
     } finally {
       setLoading(false);
     }
-  };
+  }, [isLoaded, signIn, email, password]);
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>

@@ -5,7 +5,7 @@ import { useAuth } from '../../lib/auth';
 import { getPendingCount, syncQueue } from '../../lib/offline-queue';
 
 export default function ProfileScreen() {
-  const { user, logout } = useAuth();
+  const { user, signOut } = useAuth();
   const router = useRouter();
   const [pendingCatches, setPendingCatches] = useState(0);
   const [syncing, setSyncing] = useState(false);
@@ -83,7 +83,7 @@ export default function ProfileScreen() {
         </View>
       )}
 
-      <TouchableOpacity style={styles.logoutButton} onPress={logout}>
+      <TouchableOpacity style={styles.logoutButton} onPress={signOut}>
         <Text style={styles.logoutText}>SIGN OUT</Text>
       </TouchableOpacity>
     </ScrollView>

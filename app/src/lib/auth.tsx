@@ -1,61 +1,80 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { loadTokens, saveTokens, clearTokens, authApi } from './api';
+import React, { createContext, useContext, useEffect } from 'react';
+import { ClerkProvider, ClerkLoaded, useAuth as useClerkAuth, useUser } from '@clerk/clerk-expo';
+import * as SecureStore from 'expo-secure-store';
+import { setTokenGetter } from './api';
 
-interface User {
+const CLERK_PUBLISHABLE_KEY = 'pk_live_Y2xlcmsua3VsbDEuY29tJA';
+
+// Clerk token cache using expo-secure-store
+const tokenCache = {
+  async getToken(key: string) {
+    return SecureStore.getItemAsync(key);
+  },
+  async saveToken(key: string, value: string) {
+    return SecureStore.setItemAsync(key, value);
+  },
+  async clearToken(key: string) {
+    return SecureStore.deleteItemAsync(key);
+  },
+};
+
+interface AuthUser {
   id: string;
   email: string;
-  role: 'angler' | 'director' | 'admin';
+  role: string;
 }
 
 interface AuthContextType {
-  user: User | null;
+  user: AuthUser | null;
   loading: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  register: (data: any) => Promise<void>;
-  logout: () => Promise<void>;
+  isSignedIn: boolean;
+  signOut: () => Promise<void>;
+  getToken: () => Promise<string | null>;
 }
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
   loading: true,
-  login: async () => {},
-  register: async () => {},
-  logout: async () => {},
+  isSignedIn: false,
+  signOut: async () => {},
+  getToken: async () => null,
 });
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+function AuthBridge({ children }: { children: React.ReactNode }) {
+  const { isLoaded, isSignedIn, signOut, getToken } = useClerkAuth();
+  const { user: clerkUser } = useUser();
 
+  // Wire Clerk's getToken into the API layer so all requests get the JWT
   useEffect(() => {
-    loadTokens().then(() => {
-      // TODO: validate token and fetch user profile
-      setLoading(false);
-    });
-  }, []);
+    setTokenGetter(getToken);
+  }, [getToken]);
 
-  const login = useCallback(async (email: string, password: string) => {
-    const data = await authApi.login(email, password);
-    await saveTokens(data.accessToken, data.refreshToken);
-    setUser(data.user);
-  }, []);
-
-  const register = useCallback(async (regData: any) => {
-    const data = await authApi.register(regData);
-    await saveTokens(data.accessToken, data.refreshToken);
-    setUser(data.user);
-  }, []);
-
-  const logout = useCallback(async () => {
-    try { await authApi.logout(); } catch {}
-    await clearTokens();
-    setUser(null);
-  }, []);
+  const user: AuthUser | null = isSignedIn && clerkUser ? {
+    id: clerkUser.id,
+    email: clerkUser.primaryEmailAddress?.emailAddress || '',
+    role: (clerkUser.publicMetadata?.role as string) || 'angler',
+  } : null;
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout }}>
+    <AuthContext.Provider value={{
+      user,
+      loading: !isLoaded,
+      isSignedIn: !!isSignedIn,
+      signOut: async () => { await signOut(); },
+      getToken: async () => { const t = await getToken(); return t; },
+    }}>
       {children}
     </AuthContext.Provider>
+  );
+}
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  return (
+    <ClerkProvider publishableKey={CLERK_PUBLISHABLE_KEY} tokenCache={tokenCache}>
+      <ClerkLoaded>
+        <AuthBridge>{children}</AuthBridge>
+      </ClerkLoaded>
+    </ClerkProvider>
   );
 }
 
