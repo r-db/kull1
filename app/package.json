@@ -11,7 +11,7 @@
   "dependencies": {
     "@clerk/clerk-expo": "^2.19.31",
     "expo": "~54.0.33",
-    "expo-auth-session": "^55.0.15",
+    "expo-auth-session": "~7.0.11",
     "expo-camera": "~17.0.10",
     "expo-constants": "~18.0.13",
     "expo-file-system": "~19.0.22",
@@ -24,7 +24,7 @@
     "expo-splash-screen": "~31.0.13",
     "expo-status-bar": "~3.0.9",
     "expo-task-manager": "~14.0.9",
-    "expo-web-browser": "^55.0.15",
+    "expo-web-browser": "~15.0.11",
     "react": "19.1.0",
     "react-dom": "^19.1.0",
     "react-native": "0.81.5",
