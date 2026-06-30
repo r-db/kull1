@@ -47,6 +47,16 @@
       "source": "/index.html",
       "destination": "/",
       "permanent": true
+    },
+    {
+      "source": "/hotspots",
+      "destination": "https://yakabass.kull1.com/platform-admin/hotspots",
+      "permanent": false
+    },
+    {
+      "source": "/hotspots/:path*",
+      "destination": "https://yakabass.kull1.com/platform-admin/hotspots/:path*",
+      "permanent": false
     }
   ]
 }
